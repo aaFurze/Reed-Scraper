@@ -2,22 +2,21 @@ import pytest
 import httpx
 import src.scraper as scraper
 from typing import List
-import asyncio
 import time
 
 
 
 @pytest.fixture(scope="module")
 def get_reed_webpages() -> httpx.Response:
-    return asyncio.run(scraper.get_job_postings("software-engineer", "leeds", 11, 10))
+    return scraper.get_job_postings("software-engineer", "leeds", 11, 10)
 
 @pytest.fixture
 def get_non_existant_webpages():
-    return asyncio.run(scraper.get_job_postings("archaeology", "highlands", 0, 1))
+    return scraper.get_job_postings("archaeology", "highlands", 0, 1)
 
 @pytest.fixture
 def get_zero_input_webpages():
-    return asyncio.run(scraper.get_job_postings("teacher", "highlands", 11, 0))
+    return scraper.get_job_postings("teacher", "highlands", 11, 0)
 
 
 

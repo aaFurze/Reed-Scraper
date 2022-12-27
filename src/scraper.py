@@ -1,13 +1,14 @@
 from typing import List
 import httpx
 from bs4 import BeautifulSoup
+import asyncio
 
 PAGE_SIZE = 20  # Max number of job posting per page.
 
 
 # Todo: Currently breaks if search_radius == 10 (default value). Have hack to fix it, but not good.
 # Todo: Use a construct url function instead of constructing them in this function. 
-async def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> httpx.Response:
+def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> httpx.Response:
 
     if search_radius == 10: search_radius == 11
     if max_pages <= 0: max_pages = 1
@@ -19,7 +20,7 @@ async def get_job_postings(job_title: str, location: str, search_radius: int = 1
 
     if (number_of_pages_to_get <= 1): return [first_response]
 
-    return [first_response] + await _get_more_pages(job_title, location, search_radius, number_of_pages_to_get, start_page=2)
+    return [first_response] + asyncio.run(_get_more_pages(job_title, location, search_radius, number_of_pages_to_get, start_page=2))
 
 
 def _get_first_page(job_title: str, location: str, search_radius: int) -> httpx.Response:
