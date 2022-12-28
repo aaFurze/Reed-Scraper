@@ -18,14 +18,36 @@ def get_soupified_page(get_page_html) -> BeautifulSoup:
 def get_job_containers(get_soupified_page):
     return parse_html.get_job_posting_containers(get_soupified_page)
 
+@pytest.fixture
+def get_job(get_job_containers):
+    return get_job_containers[0]
+
+
 
 def test_soupify_page(get_soupified_page: BeautifulSoup):
     assert isinstance(get_soupified_page, BeautifulSoup)
 
 
-def test_get_job_posting_containers_exist(get_job_containers: BeautifulSoup):
+def test_get_job_posting_containers_exist(get_job_containers: List[BeautifulSoup]):
     assert len(get_job_containers) > 0
 
-def test_get_job_title_raw(get_job_containers: BeautifulSoup):
-    assert parse_html.get_job_title_raw(get_job_containers[0]) is not None
 
+def test_get_job_title_exists(get_job: BeautifulSoup):
+    assert type(parse_html.get_job_title(get_job)) is str
+
+
+def test_get_posted_date_info_and_employer_raw_exists(get_job: BeautifulSoup):
+    assert type(parse_html.get_job_posted_date_and_employer_info_raw(get_job)) is str
+
+def test_get_posted_date_info_and_employer_raw_gets_employer(get_job: BeautifulSoup):
+    assert parse_html.get_job_posted_date_and_employer_info_raw(get_job).find("by") != -1
+
+
+def test_get_job_metadata_panel_raw_exists(get_job: BeautifulSoup):
+    assert type(parse_html.get_job_metadata_panel_raw(get_job)) is not None
+
+def test_get_job_metadata_no_class_returns_first_item(get_job: BeautifulSoup):
+    assert len(parse_html._get_job_metadata(get_job, "li", "")) > 0
+
+def test_get_job_metadata_when_invalid_tag_class(get_job: BeautifulSoup):
+    assert type(parse_html._get_job_metadata(get_job, "dsfadf", "dsfadsf")) is str
