@@ -1,9 +1,10 @@
-import pytest
-import httpx
-import src.scraper as scraper
-from typing import List
 import time
+from typing import List
 
+import httpx
+import pytest
+
+import src.scraper as scraper
 
 
 @pytest.fixture(scope="module")
