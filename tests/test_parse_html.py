@@ -1,9 +1,11 @@
-import pytest
-import httpx
-from src.scraper import get_job_postings
-import src.parse_html as parse_html
 from typing import List
+
+import httpx
+import pytest
 from bs4 import BeautifulSoup
+
+import src.parse_html as parse_html
+from src.scraper import get_job_postings
 
 
 @pytest.fixture(scope="module")
@@ -47,7 +49,14 @@ def test_get_job_metadata_panel_raw_exists(get_job: BeautifulSoup):
     assert type(parse_html.get_job_metadata_panel_raw(get_job)) is not None
 
 def test_get_job_metadata_no_class_returns_first_item(get_job: BeautifulSoup):
-    assert len(parse_html._get_job_metadata(get_job, "li", "")) > 0
+    assert len(parse_html._get_job_data(get_job, "li", "")) > 0
 
 def test_get_job_metadata_when_invalid_tag_class(get_job: BeautifulSoup):
-    assert type(parse_html._get_job_metadata(get_job, "dsfadf", "dsfadsf")) is str
+    assert type(parse_html._get_job_data(get_job, "dsfadf", "dsfadsf")) is str
+
+def test_get_job_description_start_raw_exists(get_job: BeautifulSoup):
+    assert type(parse_html.get_job_description_start_raw(get_job)) is str
+
+def test_get_job_full_page_link_raw_exists(get_job: BeautifulSoup):
+    print(parse_html.get_job_full_page_link_raw(get_job))
+    assert type(parse_html.get_job_full_page_link_raw(get_job)) is str
