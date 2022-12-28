@@ -54,6 +54,25 @@ def test_get_job_metadata_no_class_returns_first_item(get_job: BeautifulSoup):
 def test_get_job_metadata_when_invalid_tag_class(get_job: BeautifulSoup):
     assert type(parse_html._get_job_data(get_job, "dsfadf", "dsfadsf")) is str
 
+def test_get_job_salary_info_raw(get_job: BeautifulSoup) -> str:
+    assert len(parse_html.get_job_salary_info_raw(get_job)) > 0
+
+
+def test_get_job_location_raw(get_job: BeautifulSoup) -> str:
+    assert len(parse_html.get_job_location_raw(get_job)) > 0
+
+
+def test_get_job_tenure_type_raw(get_job: BeautifulSoup) -> str:
+    assert len(parse_html.get_job_tenure_type_raw(get_job)) > 0
+
+
+def test_get_job_remote_status_raw(get_job: BeautifulSoup) -> str:
+    assert len(parse_html.get_job_remote_status_raw(get_job)) > 0
+
+
+def get_job_description_start_raw(container: BeautifulSoup) -> str:
+    return parse_html._get_job_data(container, "p", "job-result-description__details")
+
 def test_get_job_description_start_raw_exists(get_job: BeautifulSoup):
     assert type(parse_html.get_job_description_start_raw(get_job)) is str
 
