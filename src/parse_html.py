@@ -1,6 +1,8 @@
 import httpx
 from bs4 import BeautifulSoup
 
+BASE_URL = "https://reed.co.uk"
+
 
 def soupify_page(response: httpx.Response) -> BeautifulSoup:
     return BeautifulSoup(response.text, "lxml")
@@ -24,9 +26,7 @@ def get_job_metadata_panel_raw(container: BeautifulSoup) -> BeautifulSoup:
     return container.find("ul", class_="job-metadata")
 
 
-def _get_job_data(
-    metadata_panel: BeautifulSoup, container_type: str, class_name: str
-) -> str:
+def _get_job_data(metadata_panel: BeautifulSoup, container_type: str, class_name: str) -> str:
     if class_name != "":
         container = metadata_panel.find(container_type, class_=class_name)
     else:
@@ -59,4 +59,4 @@ def get_job_description_start_raw(container: BeautifulSoup) -> str:
 
 
 def get_job_full_page_link_raw(container: BeautifulSoup):
-    return container.find("a", class_="job-result-card__block-link")["href"]
+    return BASE_URL + container.find("a", class_="job-result-card__block-link")["href"]
