@@ -35,6 +35,7 @@ def _get_job_data(metadata_panel: BeautifulSoup, container_type: str, class_name
 
     if container:
         return container.text.strip()
+    # If nothing was found, just return an empty string.
     return ""
 
 
