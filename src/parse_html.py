@@ -52,7 +52,7 @@ def get_job_tenure_type_raw(metadata_panel: BeautifulSoup) -> str:
 
 def get_job_remote_status_raw(metadata_panel: BeautifulSoup) -> str:
     remote_status = _get_job_data(metadata_panel, "li", "job-metadata__item--remote")
-    if remote_status == "": return "No"
+    if remote_status == "": return "no"
     return remote_status
 
 

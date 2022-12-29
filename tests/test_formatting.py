@@ -30,9 +30,30 @@ def salary_range_daily():
 def salary_competitive():
     return "  Competitive salary"
 
+@pytest.fixture
+def location():
+    return " Leeds         "
+
+@pytest.fixture
+def tenure_permanent_full_time():
+    return "Permanent, full-time "
+
+@pytest.fixture
+def tenure_contract_optional_time():
+    return "Contract, full-time or part-time "
+
+@pytest.fixture
+def remote_status():
+    return "   Work from home  "
+
+@pytest.fixture
+def remote_status_empty():
+    return "   "
+
 
 def test_format_job_title(dirty_string: str):
     assert formatting.format_job_title(dirty_string) == "Dirty string"
+
 
 
 class TestFormattingDates:
@@ -73,4 +94,28 @@ class TestFormatJobPay:
     
     def test_format_job_salary_type_competitive(self, salary_competitive):
         assert formatting.FormatJobPay.format_job_salary_type(salary_competitive) == "competitive"
+    
+
+class TestFormatJobWorkConditions:
+    def test_format_job_location(self, location):
+        assert formatting.FormatJobWorkConditions.format_job_location(location) == "Leeds"
+    
+    def test_format_job_tenure_type_permanent_full_time_input(self, tenure_permanent_full_time):
+        assert formatting.FormatJobWorkConditions.format_job_tenure_type(tenure_permanent_full_time) == "Permanent"
+    
+    def test_format_job_is_full_time_permanent_full_time_input(self, tenure_permanent_full_time):
+        assert formatting.FormatJobWorkConditions.format_job_is_full_time(tenure_permanent_full_time) == "Full-time"
+    
+    def test_format_job_tenure_type_contract_optional_time_input(self, tenure_contract_optional_time):
+        assert formatting.FormatJobWorkConditions.format_job_tenure_type(tenure_contract_optional_time) == "Contract"
+    
+    def test_format_job_is_full_time_contract_optional_time_input(self, tenure_contract_optional_time):
+        assert formatting.FormatJobWorkConditions.format_job_is_full_time(tenure_contract_optional_time) == "Full or Part-time"
+    
+    def test_format_job_remote_work_status_work_from_home_input(self, remote_status):
+        assert formatting.FormatJobWorkConditions.format_job_remote_status(remote_status) == "Work From Home"
+    
+    def test_format_job_remote_work_status_empty_input(self, remote_status_empty):
+        assert formatting.FormatJobWorkConditions.format_job_remote_status(remote_status_empty) == "Unspecified"
+
     

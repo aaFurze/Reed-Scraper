@@ -90,3 +90,34 @@ class FormatJobPay:
         if salary_raw.find("negotiable") != -1: return 3
         return 4
 
+
+
+class FormatJobWorkConditions:
+
+    TENURE_TYPES = ["Permanent", "Contract", "Temporary"]
+    WORK_HOUR_TYPES = ["Full or Part-time", "Full-time", "Part-time"]
+    REMOTE_STATUS = ["Work From Home", "Unspecified"]
+
+    @staticmethod
+    def format_job_location(location_raw: str) -> str:
+        return location_raw.strip().capitalize()
+    
+    @classmethod
+    def format_job_tenure_type(cls, tenure_type_raw: str) -> str:
+        if tenure_type_raw.find("Permanent") != -1: return FormatJobWorkConditions.TENURE_TYPES[0]
+        if tenure_type_raw.find("Contract") != -1: return FormatJobWorkConditions.TENURE_TYPES[1]
+        if tenure_type_raw.find("Temporary") != -1: return FormatJobWorkConditions.TENURE_TYPES[2]
+        return tenure_type_raw.strip().capitalize()
+    
+    @classmethod
+    def format_job_is_full_time(cls, tenure_type_raw: str) -> str:
+        if tenure_type_raw.find("full") and tenure_type_raw.find("part") != -1: return FormatJobWorkConditions.WORK_HOUR_TYPES[0]
+        if tenure_type_raw.find("full") != -1: return FormatJobWorkConditions.WORK_HOUR_TYPES[1]
+        if tenure_type_raw.find("part") != -1: return FormatJobWorkConditions.WORK_HOUR_TYPES[2]
+        return tenure_type_raw.strip().capitalize()
+    
+    @classmethod
+    def format_job_remote_status(cls, remote_status_raw: str) -> str:
+        if remote_status_raw.find("from home") != -1: return FormatJobWorkConditions.REMOTE_STATUS[0]
+        return FormatJobWorkConditions.REMOTE_STATUS[1]
+
