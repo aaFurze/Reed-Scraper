@@ -50,6 +50,11 @@ def remote_status():
 def remote_status_empty():
     return "   "
 
+@pytest.fixture
+def partial_url():
+    return "  /jobs/software-engineer/48648894?source=searchResults&filter=%2fjobs%2fsoftware-engineer-jobs-in-leeds    "
+
+
 
 def test_format_job_title(dirty_string: str):
     assert formatting.format_job_title(dirty_string) == "Dirty string"
@@ -119,3 +124,5 @@ class TestFormatJobWorkConditions:
         assert formatting.FormatJobWorkConditions.format_job_remote_status(remote_status_empty) == "Unspecified"
 
     
+def test_format_job_url_contains_reed(partial_url):
+    assert formatting.format_job_url(partial_url).find("reed.co.uk") != -1

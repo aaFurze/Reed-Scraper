@@ -1,6 +1,8 @@
 import datetime
 from typing import List, Union
 
+BASE_URL = "https://reed.co.uk"
+
 
 def format_job_title(title: str) -> str:
     alnum_title = ""
@@ -124,4 +126,8 @@ class FormatJobWorkConditions:
     def format_job_remote_status(cls, remote_status_raw: str) -> str:
         if remote_status_raw.find("from home") != -1: return FormatJobWorkConditions.REMOTE_STATUS[0]
         return FormatJobWorkConditions.REMOTE_STATUS[1]
+
+
+def format_job_url(raw_url: str) -> str:
+    return BASE_URL + raw_url.strip()
 
