@@ -58,21 +58,21 @@ def test_format_job_title(dirty_string: str):
 
 class TestFormattingDates:
     def test_format_job_posted_date_actual_date_input(self, dirty_date_and_employer: str):
-        assert formatting.format_job_posted_date(dirty_date_and_employer) == datetime.datetime(year=datetime.datetime.now().year, month=10, day=5).date()
+        assert formatting.FormatJobDatePosted.format_job_posted_date(dirty_date_and_employer) == datetime.datetime(year=2022, month=10, day=5).date()
 
     def test_format_job_posted_date_days_ago_input(self, dirty_days_ago_and_employer: str):
-        assert formatting.format_job_posted_date(dirty_days_ago_and_employer) == (datetime.datetime.now() - datetime.timedelta(days=4)).date()
+        assert formatting.FormatJobDatePosted.format_job_posted_date(dirty_days_ago_and_employer) == (datetime.datetime.now() - datetime.timedelta(days=4)).date()
 
     def test_get_year_value_earlier_month(self):
-        assert formatting._get_year_value(current_date=datetime.datetime(month=1, day=1, year=2022).date(),
+        assert formatting.FormatJobDatePosted._get_year_value(current_date=datetime.datetime(month=1, day=1, year=2022).date(),
         other_date=datetime.datetime(month=10, day=5, year=1900).date()) == 2021
 
     def test_get_year_value_same_month_day(self):
-        assert formatting._get_year_value(current_date=datetime.datetime(month=11, day=16, year=2022).date(),
+        assert formatting.FormatJobDatePosted._get_year_value(current_date=datetime.datetime(month=11, day=16, year=2022).date(),
         other_date=datetime.datetime(month=11, day=16, year=1900).date()) == 2022
 
     def test_get_year_value_later_month(self):
-        assert formatting._get_year_value(current_date=datetime.datetime(month=11, day=16, year=2022).date(),
+        assert formatting.FormatJobDatePosted._get_year_value(current_date=datetime.datetime(month=11, day=16, year=2022).date(),
         other_date=datetime.datetime(month=10, day=5, year=1900).date()) == 2022
 
 
