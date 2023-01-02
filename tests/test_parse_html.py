@@ -5,12 +5,12 @@ import pytest
 from bs4 import BeautifulSoup
 
 import src.parse_html as parse_html
-from src.scraper import get_job_postings
+from src.scraper import ReedJobPostingsScraper
 
 
 @pytest.fixture(scope="module")
 def get_page_html() -> List[httpx.Response]:
-    return get_job_postings(job_title="software-engineer", location="leeds", search_radius=25, max_pages=1)[0]
+    return ReedJobPostingsScraper.get_job_postings(job_title="software-engineer", location="leeds", search_radius=25, max_pages=1)[0]
 
 @pytest.fixture(scope="module")
 def get_soupified_page(get_page_html) -> BeautifulSoup:

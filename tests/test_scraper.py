@@ -9,15 +9,15 @@ import src.scraper as scraper
 
 @pytest.fixture(scope="module")
 def get_reed_webpages() -> httpx.Response:
-    return scraper.get_job_postings("software-engineer", "leeds", 11, 10)
+    return scraper.ReedJobPostingsScraper.get_job_postings("software-engineer", "leeds", 11, 10)
 
 @pytest.fixture
 def get_non_existant_webpages():
-    return scraper.get_job_postings("archaeology", "highlands", 0, 1)
+    return scraper.ReedJobPostingsScraper.get_job_postings("archaeology", "highlands", 0, 1)
 
 @pytest.fixture
 def get_zero_input_webpages():
-    return scraper.get_job_postings("teacher", "highlands", 11, 0)
+    return scraper.ReedJobPostingsScraper.get_job_postings("teacher", "highlands", 11, 0)
 
 
 
@@ -41,10 +41,10 @@ def test_get_job_pages_zero_pages_input(get_zero_input_webpages: List[httpx.Resp
 
 
 def test_get_number_of_job_postings_exists(get_non_existant_webpages: List[httpx.Response]):
-    assert scraper._get_number_of_job_postings(get_non_existant_webpages[0]) == 0
+    assert scraper.ReedJobPostingsScraper._get_number_of_job_postings(get_non_existant_webpages[0]) == 0
 
 
 def test_get_number_of_pages_to_return():
-    assert scraper._get_number_of_pages_to_return(120, 20) == 6
-    assert scraper._get_number_of_pages_to_return(11, 20) == 1
-    assert scraper._get_number_of_pages_to_return(111, 1) == 1
+    assert scraper.ReedJobPostingsScraper._get_number_of_pages_to_return(number_of_jobs=120, max_pages=20) == 6
+    assert scraper.ReedJobPostingsScraper._get_number_of_pages_to_return(number_of_jobs=11, max_pages=20) == 1
+    assert scraper.ReedJobPostingsScraper._get_number_of_pages_to_return(number_of_jobs=111, max_pages=1) == 1
