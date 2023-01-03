@@ -4,7 +4,7 @@ from typing import List
 import httpx
 from bs4 import BeautifulSoup
 
-PAGE_SIZE = 20  # Max number of job posting per page.
+PAGE_SIZE = 25  # Max number of job posting per page.
 
 
 
@@ -12,7 +12,7 @@ class ReedJobPostingsScraper:
     # Todo: Currently breaks if search_radius == 10 (default value). Have hack to fix it, but not good.
     # Todo: Use a construct url function instead of constructing them in this function. 
     @staticmethod
-    def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> httpx.Response:
+    def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> List[httpx.Response]:
 
         if search_radius == 10: search_radius == 11
         if max_pages <= 0: max_pages = 1

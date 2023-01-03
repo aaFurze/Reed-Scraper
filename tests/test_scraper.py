@@ -45,7 +45,7 @@ class TestReedJobPostingsScraper:
         assert scraper.ReedJobPostingsScraper._get_number_of_job_postings(get_non_existant_webpages[0]) == 0
 
 
-    @pytest.mark.parametrize("test_number_of_jobs, test_max_pages, expected_result", [(120, 20, 6), (11, 20, 1), (111, 1, 1)])
+    @pytest.mark.parametrize("test_number_of_jobs, test_max_pages, expected_result", [(120, 20, 5), (11, 20, 1), (111, 1, 1)])
     def test_get_number_of_pages_to_return(self, test_number_of_jobs, test_max_pages, expected_result):
         assert scraper.ReedJobPostingsScraper._get_number_of_pages_to_return(number_of_jobs=test_number_of_jobs,
             max_pages=test_max_pages) == expected_result
