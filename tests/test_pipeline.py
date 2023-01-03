@@ -15,15 +15,15 @@ def job_data_pipeline_standard() -> JobDataPipeline:
 
 class TestJobDataPipeline:
     def test_scraper_returns_list(self, job_data_pipeline_standard: JobDataPipeline):
-        assert type(job_data_pipeline_standard.scraped_results) is list
+        assert type(job_data_pipeline_standard.scraped_responses) is list
 
     @pytest.mark.parametrize("index", [0, -1])
     def test_scraper_returns_httpx_responses(self, job_data_pipeline_standard: JobDataPipeline, index: int):
-        assert type(job_data_pipeline_standard.scraped_results[index]) is httpx.Response
+        assert type(job_data_pipeline_standard.scraped_responses[index]) is httpx.Response
     
     def test_parsed_results_returns_list(self, job_data_pipeline_standard: JobDataPipeline):
-        assert type(job_data_pipeline_standard.parsed_results) is list
+        assert type(job_data_pipeline_standard.raw_results) is list
     
     @pytest.mark.parametrize("index", [0, -1])
     def test_parser_returns_httpx_responses(self, job_data_pipeline_standard: JobDataPipeline, index: int):
-        assert type(job_data_pipeline_standard.parsed_results[index]) is RawJobInformation
+        assert type(job_data_pipeline_standard.raw_results[index]) is RawJobInformation

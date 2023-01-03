@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 import src.formatting as formatting
+import src.parse_html as parse_html
 
 
 @pytest.fixture
@@ -11,11 +12,11 @@ def dirty_string():
 
 @pytest.fixture
 def dirty_date_and_employer():
-    return " 5 October by Some Employer  "
+    return " 5 October by Big Pharma  "
 
 @pytest.fixture
 def dirty_days_ago_and_employer():
-    return " 4 days ago by Some Employer  "
+    return " 4 days ago by Industrial Agriculture  "
 
 
 @pytest.fixture
@@ -58,6 +59,13 @@ def partial_url():
 
 def test_format_job_title(dirty_string: str):
     assert formatting.format_job_title(dirty_string) == "Dirty string"
+
+
+def test_format_job_employer_dirty_date_and_employer(dirty_date_and_employer):
+    assert formatting.format_job_employer(dirty_date_and_employer) == "Big Pharma"
+
+def body_of_test_format_job_employer_dirty_days_ago_and_employer(dirty_days_ago_and_employer: str):
+    assert formatting.format_job_employer(dirty_days_ago_and_employer) == "Industrial Agriculture"
 
 
 
@@ -126,3 +134,24 @@ class TestFormatJobWorkConditions:
     
 def test_format_job_url_contains_reed(partial_url):
     assert formatting.format_job_url(partial_url).find("reed.co.uk") != -1
+
+
+
+@pytest.fixture
+def example_raw_job_information():
+    return parse_html.RawJobInformation(title="   Software engineer", date_and_employer="5 days ago by Mega Corp",
+     salary="    £30,000 - £40,000 per annum ", location="Leeds", tenure_type="Permanent, full-time ",
+      remote_status="   Work from home  ", description_start="This is the best company in the world...",
+       full_page_link="  /jobs/software-engineer/48648894?source=searchResults&filter=%2fjobs%2fsoftware-engineer-jobs-in-leeds    ")
+
+@pytest.fixture
+def example_formatted_job_information(example_raw_job_information):
+    return formatting.raw_to_formatted_job_information(example_raw_job_information)
+
+
+class TestFormatJobData:
+    @pytest.mark.parametrize("attribute", ["title", "date", "employer", "salary_lower", "salary_upper", "salary_type", "location", "tenure_type", "remote_status",
+     "description_start", "full_page_link"])
+
+    def test_raw_job_info_to_formatted_job_info_fills_attributes(self, example_formatted_job_information, attribute):
+        assert getattr(example_formatted_job_information, attribute) != ""
