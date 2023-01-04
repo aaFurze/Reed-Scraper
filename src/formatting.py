@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import datetime
 from dataclasses import dataclass
-from typing import List, Protocol, Union
+from typing import List, Union
+
+from typing_extensions import Protocol
 
 BASE_URL = "https://reed.co.uk"
 
