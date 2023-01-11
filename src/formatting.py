@@ -14,23 +14,24 @@ def raw_to_formatted_job_information(r: RawJobInformation) -> FormattedJobInform
     """
     Formats any data collected for a Reed job advertisement and cleans it into a presentable format.
     """
-    output = FormattedJobInformation("", "", "", "", "", "", "", "", "", "", "")
+    title = format_job_title(r.title)
+    date = FormatJobDatePosted.format_job_posted_date(r.date_and_employer)
+    employer = format_job_employer(r.date_and_employer)
 
-    output.title = format_job_title(r.title)
-    output.date = FormatJobDatePosted.format_job_posted_date(r.date_and_employer)
-    output.employer = format_job_employer(r.date_and_employer)
+    salary_lower, salary_upper = FormatJobPay.format_job_salary_range(r.salary)
+    salary_type = FormatJobPay.format_job_salary_type(r.salary)
+    location = FormatJobWorkConditions.format_job_location(r.location)
 
-    output.salary_lower, output.salary_upper = FormatJobPay.format_job_salary_range(r.salary)
-    output.salary_type = FormatJobPay.format_job_salary_type(r.salary)
-    output.location = FormatJobWorkConditions.format_job_location(r.location)
+    tenure_type = FormatJobWorkConditions.format_job_tenure_type(r.tenure_type)
+    remote_status = FormatJobWorkConditions.format_job_remote_status(r.remote_status)
+    description_start = format_job_description_start(r.description_start)
 
-    output.tenure_type = FormatJobWorkConditions.format_job_tenure_type(r.tenure_type)
-    output.remote_status = FormatJobWorkConditions.format_job_remote_status(r.remote_status)
-    output.description_start = format_job_description_start(r.description_start)
+    full_page_link = format_job_url(r.full_page_link)
 
-    output.full_page_link = format_job_url(r.full_page_link)
-
-    return output
+    return FormattedJobInformation(title=title, date=date, employer=employer,
+    salary_lower=salary_lower, salary_upper=salary_upper, salary_type=salary_type,
+    location=location, tenure_type=tenure_type, remote_status=remote_status,
+    description_start=description_start, full_page_link=full_page_link)
 
 
 class RawJobInformation(Protocol):
@@ -56,6 +57,9 @@ class FormattedJobInformation:
     remote_status: str
     description_start: str
     full_page_link: str
+
+    def to_list(self) -> List[str]:
+        return self.__dict__.values()
 
 
 
