@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#csv files produced
+data/*
+!data/.gitkeep
+!data/example_data*
+*.csv
