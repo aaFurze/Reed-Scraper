@@ -56,7 +56,7 @@ class SaveToDataFrame:
     
     @staticmethod
     def save_df_to_csv(df: pd.DataFrame, file_name: str) -> bool:
-        file_name = _format_file_name(file_name) 
+        file_name = FormatFileName._ensure_ends_csv(file_name) 
         try:
             df.to_csv(file_name, sep=",")
             return True
@@ -64,7 +64,19 @@ class SaveToDataFrame:
             print(f"Could not save file. Does a \"data\" folder exist in the project root?")
             return False
 
-def _format_file_name(raw_file_name: str) -> str:
-    if raw_file_name.find(".csv") == -1:
-            return raw_file_name.strip() + ".csv"
-    return raw_file_name.strip()
+
+class FormatFileName:
+    @staticmethod
+    def format_name(raw_name: str) -> str:
+        name = raw_name.strip() + FormatFileName._get_timestamp(datetime.datetime.now())
+        return FormatFileName._ensure_ends_csv(raw_file_name=name)
+
+    @staticmethod
+    def _ensure_ends_csv(raw_file_name: str) -> str:
+        if raw_file_name.find(".csv") == -1:
+                return raw_file_name.strip() + ".csv"
+        return raw_file_name.replace(".csv", "") + ".csv"
+    @staticmethod
+    def _get_timestamp(date: datetime.datetime) -> str:
+        return date.strftime("-%y%m%d-%H%M%S")
+

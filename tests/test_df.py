@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 import pytest
 
-from src.df import COLUMNS, SaveToDataFrame, _format_file_name
+from src.df import COLUMNS, FormatFileName, SaveToDataFrame
 from src.formatting import FormattedJobInformation
 
 
@@ -34,12 +34,16 @@ def populated_df(blank_df, job_information, job_information_2) -> pd.DataFrame:
 
 
 @pytest.fixture
-def file_name_no_csv():
+def file_name_no_csv() -> str:
     return "test_name    "
 
 @pytest.fixture
-def file_name_with_csv():
+def file_name_with_csv() -> str:
     return "test_name2.csv"
+
+@pytest.fixture
+def test_date() -> datetime.datetime:
+    return datetime.datetime(year=2021, month=5, day=6, hour=23, minute=43, second=1)
 
 
 
@@ -71,14 +75,28 @@ class TestSaveToDataFrame():
     
 
 class TestFormatFileName:
-    def test_format_file_name_adds_csv(self, file_name_no_csv: str):
-        assert _format_file_name(file_name_no_csv).find(".csv") != -1
+    def test_format_name_correct_end(self, file_name_with_csv: str):
+        formatted_name = FormatFileName.format_name(file_name_with_csv) 
+        print(formatted_name)
+        assert formatted_name.find(".csv") == len(formatted_name) - 4
+
+    def test_format_name_raw_name_stripped(self, file_name_no_csv: str):
+        formatted_name = FormatFileName.format_name(file_name_no_csv)
+        assert formatted_name.find("test_name") == 0
+        assert formatted_name.find("  ") == -1  # Makes sure name is stripped.
+
+    def test_ensure_ends_csv_adds_csv(self, file_name_no_csv: str):
+        assert FormatFileName._ensure_ends_csv(file_name_no_csv).find(".csv") != -1
     
     @pytest.mark.parametrize("file_name, target_length", [("testy", 9),
      ("test.csv", 8)])
-    def test_format_file_name_strip(self, file_name: str, target_length: int):
-        assert len(_format_file_name(file_name)) == target_length
+    def test_ensure_ends_csv_strip(self, file_name: str, target_length: int):
+        assert len(FormatFileName._ensure_ends_csv(file_name)) == target_length
         
-    def test_format_file_name_not_add_csv(self, file_name_with_csv: str):
-        formatted_file_name = _format_file_name(file_name_with_csv)
+    def test_ensure_ends_csv_not_add_csv(self, file_name_with_csv: str):
+        formatted_file_name = FormatFileName._ensure_ends_csv(file_name_with_csv)
         assert formatted_file_name.find(".csv") == len(formatted_file_name) - 4
+    
+    def test_get_timestamp_year(self, test_date: datetime.datetime):
+        assert FormatFileName._get_timestamp(test_date).find("21") == 1
+
