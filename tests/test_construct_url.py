@@ -2,6 +2,12 @@ import pytest
 
 from src.construct_url import ConstructUrl
 
+"""
+Todo next time:
+    - Added ConstructUrl access/usage into ReedJobPostingsScraper
+"""
+
+
 
 @pytest.fixture
 def target_url_standard():
@@ -60,7 +66,19 @@ class TestConstructUrl:
         assert target_url_standard.find(
             ConstructUrl.get_location_url_segment(standard_input_dict["location"])) != -1
 
+    def test_get_url_contains_question_mark(self, standard_input_dict: dict):
+        test_url = ConstructUrl.get_url(**standard_input_dict)
+        assert test_url.find("?") != -1
 
+    def test_get_url_contains_question_mark_and_sign(self, standard_input_dict: dict):
+        test_url = ConstructUrl.get_url(**standard_input_dict)
+        assert test_url.find("&") != -1
+
+    def test_get_url_question_mark_and_sign_order_correct(self, standard_input_dict: dict):
+        test_url = ConstructUrl.get_url(**standard_input_dict)
+        question_mark_position = test_url.find("?")
+        and_sign_position = test_url.find("&")  
+        assert question_mark_position < and_sign_position
 
     def test_get_url_special(self, target_url_special_case: str, special_case_input_dict: dict):
         assert ConstructUrl.get_url(**special_case_input_dict) == target_url_special_case

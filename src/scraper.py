@@ -4,6 +4,8 @@ from typing import List
 import httpx
 from bs4 import BeautifulSoup
 
+from src.construct_url import ConstructUrl
+
 PAGE_SIZE = 25  # Max number of job posting per page.
 
 
@@ -12,8 +14,13 @@ class ReedJobPostingsScraper:
     # Todo: Currently breaks if search_radius == 10 (default value). Have hack to fix it, but not good.
     # Todo: Use a construct url function instead of constructing them in this function. 
     # Todo: Need formatting functions in construct url class.
+
+    URL_CONSTRUCTER = ConstructUrl
+
     @staticmethod
     def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> List[httpx.Response]:
+        print(ConstructUrl.get_url(job_name=job_title, location=location,
+         search_radius=search_radius, page_number=1))
         if max_pages <= 0: max_pages = 1
         first_response = ReedJobPostingsScraper._get_first_page(job_title, location, search_radius)
 
@@ -26,14 +33,17 @@ class ReedJobPostingsScraper:
 
     @staticmethod
     def _get_first_page(job_title: str, location: str, search_radius: int) -> httpx.Response:
-        return httpx.get(f"https://www.reed.co.uk/jobs/{job_title}-jobs-in-{location}?proximity={search_radius}&pageno=1")
+        return httpx.get(ReedJobPostingsScraper.URL_CONSTRUCTER.get_url(job_name=job_title,
+         location=location, search_radius=search_radius, page_number=1))
 
     @staticmethod
     async def _get_more_pages(job_title: str, location: str, search_radius: int, no_pages: int, start_page: int = 2) -> List[httpx.Response]:
         output = []
         async with httpx.AsyncClient() as client:
-            for i in range(start_page, no_pages + 1):
-                response = await client.get(f"https://www.reed.co.uk/jobs/{job_title}-jobs-in-{location}?proximity={search_radius}&pageno={i}")
+            for page_number in range(start_page, no_pages + 1):
+                response = await client.get(ReedJobPostingsScraper.URL_CONSTRUCTER.get_url(
+                    job_name=job_title, location=location, search_radius=search_radius,
+                     page_number=page_number))
                 output.append(response)
         return output
 
