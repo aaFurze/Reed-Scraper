@@ -3,11 +3,17 @@ from typing import List
 
 import httpx
 from bs4 import BeautifulSoup
+from typing_extensions import Protocol
 
 from src.construct_url import ConstructUrl
 
-PAGE_SIZE = 25  # Max number of job posting per page.
+PAGE_SIZE = 25  # Max number of job posting per page.   
 
+
+class UrlConstructor(Protocol):
+    @classmethod
+    def get_url() -> str:
+        ...
 
 
 class ReedJobPostingsScraper:
@@ -15,7 +21,7 @@ class ReedJobPostingsScraper:
     # Todo: Use a construct url function instead of constructing them in this function. 
     # Todo: Need formatting functions in construct url class.
 
-    URL_CONSTRUCTER = ConstructUrl
+    URL_CONSTRUCTOR: UrlConstructor = ConstructUrl
 
     @staticmethod
     def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> List[httpx.Response]:
@@ -33,7 +39,7 @@ class ReedJobPostingsScraper:
 
     @staticmethod
     def _get_first_page(job_title: str, location: str, search_radius: int) -> httpx.Response:
-        return httpx.get(ReedJobPostingsScraper.URL_CONSTRUCTER.get_url(job_name=job_title,
+        return httpx.get(ReedJobPostingsScraper.URL_CONSTRUCTOR.get_url(job_name=job_title,
          location=location, search_radius=search_radius, page_number=1))
 
     @staticmethod
@@ -41,7 +47,7 @@ class ReedJobPostingsScraper:
         output = []
         async with httpx.AsyncClient() as client:
             for page_number in range(start_page, no_pages + 1):
-                response = await client.get(ReedJobPostingsScraper.URL_CONSTRUCTER.get_url(
+                response = await client.get(ReedJobPostingsScraper.URL_CONSTRUCTOR.get_url(
                     job_name=job_title, location=location, search_radius=search_radius,
                      page_number=page_number))
                 output.append(response)
