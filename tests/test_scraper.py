@@ -13,7 +13,7 @@ def get_reed_webpages() -> httpx.Response:
 
 @pytest.fixture
 def get_non_existant_webpages():
-    return scraper.ReedJobPostingsScraper.get_job_postings("archaeology", "highlands", 0, 1)
+    return scraper.ReedJobPostingsScraper.get_job_postings("zzczcz-czzc", "highlands", 0, 1)
 
 @pytest.fixture
 def get_zero_input_webpages():
@@ -26,7 +26,6 @@ class TestReedJobPostingsScraper:
         assert get_reed_webpages[0].status_code == 200
 
     def test_get_reed_webpage_has_html(self, get_reed_webpages: List[httpx.Response]):
-        print(get_reed_webpages[0].url)
         assert get_reed_webpages[0].text.find("job-result-heading__title") != -1
 
     def test_get_job_pages_count(self, get_reed_webpages: List[httpx.Response]):

@@ -11,12 +11,10 @@ PAGE_SIZE = 25  # Max number of job posting per page.
 class ReedJobPostingsScraper:
     # Todo: Currently breaks if search_radius == 10 (default value). Have hack to fix it, but not good.
     # Todo: Use a construct url function instead of constructing them in this function. 
+    # Todo: Need formatting functions in construct url class.
     @staticmethod
     def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> List[httpx.Response]:
-
-        if search_radius == 10: search_radius == 11
         if max_pages <= 0: max_pages = 1
-
         first_response = ReedJobPostingsScraper._get_first_page(job_title, location, search_radius)
 
         number_of_job_postings = ReedJobPostingsScraper._get_number_of_job_postings(first_response)
