@@ -52,12 +52,11 @@ class JobContainerParser:
         if class_name != "":
             container = metadata_panel.find(container_type, class_=class_name)
         else:
-            # returns first item by default.
+            # returns first item with specified html tag by default.
             container = metadata_panel.find(container_type)
 
         if container:
             return container.text.strip()
-        # If nothing was found, just return an empty string.
         return ""
 
     @staticmethod

@@ -83,7 +83,7 @@ class TestFormatFileName:
     def test_format_name_raw_name_stripped(self, file_name_no_csv: str):
         formatted_name = FormatFileName.format_name(file_name_no_csv)
         assert formatted_name.find("test_name") == 0
-        assert formatted_name.find("  ") == -1  # Makes sure name is stripped.
+        assert formatted_name.find("  ") == -1
 
     def test_ensure_ends_csv_adds_csv(self, file_name_no_csv: str):
         assert FormatFileName._ensure_ends_csv(file_name_no_csv).find(".csv") != -1

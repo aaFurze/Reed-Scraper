@@ -2,12 +2,6 @@ import pytest
 
 from src.construct_url import ConstructUrl
 
-"""
-Todo next time:
-    - Added ConstructUrl access/usage into ReedJobPostingsScraper
-"""
-
-
 
 @pytest.fixture
 def target_url_standard():

@@ -17,10 +17,6 @@ class UrlConstructor(Protocol):
 
 
 class ReedJobPostingsScraper:
-    # Todo: Currently breaks if search_radius == 10 (default value). Have hack to fix it, but not good.
-    # Todo: Use a construct url function instead of constructing them in this function. 
-    # Todo: Need formatting functions in construct url class.
-
     URL_CONSTRUCTOR: UrlConstructor = ConstructUrl
 
     @staticmethod
