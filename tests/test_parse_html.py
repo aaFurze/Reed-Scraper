@@ -36,7 +36,7 @@ class TestResponseToContainers:
 
 
     def test_get_job_posting_containers_exist(self, get_job_containers: List[BeautifulSoup]):
-        assert len(get_job_containers) > 0
+            assert len(get_job_containers) > 0
     
     def test_response_to_job_posting_containers_returns_multiple_objects(self, get_page_html: httpx.Response):
         assert len(ResponseToContainers.response_to_job_posting_containers(get_page_html)) > 0
@@ -90,9 +90,10 @@ class TestJobContainerParser:
         assert type(JobContainerParser.get_job_description_start_raw(get_job)) is str
 
     def test_get_job_full_page_link_raw_exists(self, get_job: BeautifulSoup):
-        print(JobContainerParser.get_job_full_page_link_raw(get_job))
         assert type(JobContainerParser.get_job_full_page_link_raw(get_job)) is str
 
+    def test_get_job_id_raw_exists(self, get_job: BeautifulSoup):
+        assert type(JobContainerParser.get_job_id_raw(get_job)) is str        
 
 
 class TestRawJobInformationFactory:
@@ -122,6 +123,9 @@ class TestRawJobInformationFactory:
 
     def test_populate_raw_job_information_from_job_container_full_page_link(self, get_raw_job_information: RawJobInformation, get_job: BeautifulSoup):
         assert get_raw_job_information.full_page_link == JobContainerParser.get_job_full_page_link_raw(get_job)
+
+    def test_populate_raw_job_information_from_container_job_id(self, get_raw_job_information: RawJobInformation, get_job: BeautifulSoup):
+        assert get_raw_job_information.job_id == JobContainerParser.get_job_id_raw(get_job)
 
     def test_populate_raw_job_information_from_job_container_description_start(self, get_raw_job_information: RawJobInformation, get_job: BeautifulSoup):
         assert get_raw_job_information.description_start == JobContainerParser.get_job_description_start_raw(get_job)    

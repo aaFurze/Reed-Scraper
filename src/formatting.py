@@ -8,12 +8,18 @@ from typing_extensions import Protocol
 
 BASE_URL = "https://reed.co.uk"
 
+"""
+Todo: Remove redundant redirect information from full_page_link values.
+"""
+
+
 
 
 def raw_to_formatted_job_information(r: RawJobInformation) -> FormattedJobInformation:
     """
     Formats any data collected for a Reed job advertisement and cleans it into a presentable format.
     """
+    job_id = format_job_id(r.job_id)
     title = format_job_title(r.title)
     date = FormatJobDatePosted.format_job_posted_date(r.date_and_employer)
     employer = format_job_employer(r.date_and_employer)
@@ -28,13 +34,14 @@ def raw_to_formatted_job_information(r: RawJobInformation) -> FormattedJobInform
 
     full_page_link = format_job_url(r.full_page_link)
 
-    return FormattedJobInformation(title=title, date=date, employer=employer,
+    return FormattedJobInformation(job_id=job_id, title=title, date=date, employer=employer,
     salary_lower=salary_lower, salary_upper=salary_upper, salary_type=salary_type,
     location=location, tenure_type=tenure_type, remote_status=remote_status,
     description_start=description_start, full_page_link=full_page_link)
 
 
 class RawJobInformation(Protocol):
+    job_id: str
     title: str
     date_and_employer: str
     salary: str
@@ -46,6 +53,7 @@ class RawJobInformation(Protocol):
 
 @dataclass
 class FormattedJobInformation:
+    job_id: int
     title: str
     date: datetime.datetime.date
     employer: str
@@ -180,7 +188,13 @@ class FormatJobWorkConditions:
 
     @staticmethod
     def format_job_location(location_raw: str) -> str:
-        return location_raw.strip().capitalize()
+        output_location = " "
+        for char in location_raw:
+            if char.isalnum() or char in [",", "-"]:
+                output_location += char
+            if char == " " and output_location[-1] != " ":
+                output_location += char
+        return output_location.strip()
     
     @classmethod
     def format_job_tenure_type(cls, tenure_type_raw: str) -> str:
@@ -208,6 +222,12 @@ def format_job_description_start(raw_description: str) -> str:
 def format_job_url(raw_url: str) -> str:
     return BASE_URL + raw_url.strip()
 
+def format_job_id(raw_id: str) -> int:
+    output = ""
+    for char in raw_id:
+        if char.isnumeric():
+            output += char
+    return int(output)
 
 
 

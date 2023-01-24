@@ -18,11 +18,12 @@ class UrlConstructor(Protocol):
 
 class ReedJobPostingsScraper:
     URL_CONSTRUCTOR: UrlConstructor = ConstructUrl
+    DEFAULT_TIMEOUT_OBJ = httpx.Timeout(timeout=15.0)
 
     @staticmethod
     def get_job_postings(job_title: str, location: str, search_radius: int = 10, max_pages: int = 1) -> List[httpx.Response]:
-        print(ConstructUrl.get_url(job_name=job_title, location=location,
-         search_radius=search_radius, page_number=1))
+        print(f"""base url = {ConstructUrl.get_url(job_name=job_title, location=location,
+         search_radius=search_radius, page_number=1)}""")
         if max_pages <= 0: max_pages = 1
         first_response = ReedJobPostingsScraper._get_first_page(job_title, location, search_radius)
 
@@ -33,19 +34,20 @@ class ReedJobPostingsScraper:
 
         return [first_response] + asyncio.run(ReedJobPostingsScraper._get_more_pages(job_title, location, search_radius, number_of_pages_to_get, start_page=2))
 
-    @staticmethod
-    def _get_first_page(job_title: str, location: str, search_radius: int) -> httpx.Response:
+    @classmethod
+    def _get_first_page(cls, job_title: str, location: str, search_radius: int) -> httpx.Response:
         return httpx.get(ReedJobPostingsScraper.URL_CONSTRUCTOR.get_url(job_name=job_title,
-         location=location, search_radius=search_radius, page_number=1))
+         location=location, search_radius=search_radius, page_number=1), timeout=cls.DEFAULT_TIMEOUT_OBJ)
 
-    @staticmethod
-    async def _get_more_pages(job_title: str, location: str, search_radius: int, no_pages: int, start_page: int = 2) -> List[httpx.Response]:
+    @classmethod
+    async def _get_more_pages(cls, job_title: str, location: str, search_radius: int, no_pages: int, start_page: int = 2) -> List[httpx.Response]:
         output = []
         async with httpx.AsyncClient() as client:
             for page_number in range(start_page, no_pages + 1):
+                print(f"Retrieving page {page_number}.")
                 response = await client.get(ReedJobPostingsScraper.URL_CONSTRUCTOR.get_url(
                     job_name=job_title, location=location, search_radius=search_radius,
-                     page_number=page_number))
+                     page_number=page_number), timeout=cls.DEFAULT_TIMEOUT_OBJ)
                 output.append(response)
         return output
 

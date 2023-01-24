@@ -6,6 +6,7 @@ from typing_extensions import Protocol
 
 
 class FormattedJobInformation(Protocol):
+    job_id: str
     title: str
     date: datetime.datetime.date
     employer: str
@@ -22,6 +23,7 @@ class FormattedJobInformation(Protocol):
         ...
 
 COLUMNS = [
+    "job_id",
     "job_title",
     "date",
     "employer",
@@ -35,7 +37,7 @@ COLUMNS = [
     "full_page_link"
 ]
 
-class SaveToDataFrame:
+class CreateJobDataFrame:
 
     @staticmethod
     def create_blank_df():
@@ -43,25 +45,17 @@ class SaveToDataFrame:
     
     @staticmethod
     def insert_job_information_object_into_df(df: pd.DataFrame, job_info: FormattedJobInformation):
+        if job_info.job_id in df["job_id"].values: return df
         df.loc[len(df)] = job_info.to_list()
         return df  
 
     @staticmethod
     def insert_mutliple_job_information_objects_into_df(df: pd.DataFrame,
-    job_infos: List[FormattedJobInformation]) -> pd.DataFrame:
+        job_infos: List[FormattedJobInformation]) -> pd.DataFrame:
         for info in job_infos:
-            df = SaveToDataFrame.insert_job_information_object_into_df(df, info)
+            df = CreateJobDataFrame.insert_job_information_object_into_df(df, info)
         return df
     
-    @staticmethod
-    def save_df_to_csv(df: pd.DataFrame, file_name: str) -> bool:
-        file_name = FormatFileName._ensure_ends_csv(file_name) 
-        try:
-            df.to_csv(file_name, sep=",")
-            return True
-        except OSError:
-            print(f"Could not save file. Does a \"data\" folder exist in the project root?")
-            return False
 
 
 class FormatFileName:
@@ -79,3 +73,14 @@ class FormatFileName:
     def _get_timestamp(date: datetime.datetime) -> str:
         return date.strftime("-%y%m%d-%H%M%S")
 
+
+def save_df_to_csv(df: pd.DataFrame, file_name: str,
+ prepend_data_folder_to_file_name: bool = True) -> bool:
+    file_name = FormatFileName.format_name(file_name)
+    try:
+        if prepend_data_folder_to_file_name: file_name = "data//" + file_name
+        df.to_csv(file_name, sep=",", index=False)
+        return True
+    except OSError:
+        print(f"Could not save file. Does a \"data\" folder exist in the project root?")
+        return False

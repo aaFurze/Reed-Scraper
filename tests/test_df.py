@@ -3,17 +3,17 @@ import datetime
 import pandas as pd
 import pytest
 
-from src.df import COLUMNS, FormatFileName, SaveToDataFrame
+from src.df import COLUMNS, CreateJobDataFrame, FormatFileName, save_df_to_csv
 from src.formatting import FormattedJobInformation
 
 
 @pytest.fixture
 def blank_df() -> pd.DataFrame:
-    return SaveToDataFrame.create_blank_df()
+    return CreateJobDataFrame.create_blank_df()
 
 @pytest.fixture
 def job_information():
-    return FormattedJobInformation("Software Guy", datetime.datetime.date(
+    return FormattedJobInformation(12345, "Software Guy", datetime.datetime.date(
         datetime.datetime(year=2022, month=11, day=24)), employer="Big Tech", salary_lower=123.32,
         salary_upper=146.42, salary_type="daily", location="Telford",
         remote_status="remote", description_start="This is a cool job...",
@@ -21,7 +21,7 @@ def job_information():
 
 @pytest.fixture
 def job_information_2():
-    return FormattedJobInformation("Data Bro", datetime.datetime.date(
+    return FormattedJobInformation(987654, "Data Bro", datetime.datetime.date(
         datetime.datetime(year=2021, month=5, day=4)), employer="Big Data", salary_lower=125.52,
         salary_upper=186.11, salary_type="daily", location="Bradford",
         remote_status="remote", description_start="This is an exciting job...",
@@ -29,7 +29,7 @@ def job_information_2():
 
 @pytest.fixture
 def populated_df(blank_df, job_information, job_information_2) -> pd.DataFrame:
-    return SaveToDataFrame.insert_mutliple_job_information_objects_into_df(blank_df,
+    return CreateJobDataFrame.insert_mutliple_job_information_objects_into_df(blank_df,
     [job_information, job_information_2])
 
 
@@ -47,37 +47,43 @@ def test_date() -> datetime.datetime:
 
 
 
-class TestSaveToDataFrame():
+class TestCreateJobDataFrame():
     def test_create_blank_df_column_count(self, blank_df: pd.DataFrame):
-        assert len(blank_df.columns) == 11
+        assert len(blank_df.columns) == 12
     
     def test_create_blank_df_column_names(self, blank_df: pd.DataFrame):
         assert list(blank_df.columns) == COLUMNS 
     
     def test_insert_job_information_object_into_df_length(self, blank_df: pd.DataFrame,
      job_information):
-        assert len(SaveToDataFrame.insert_job_information_object_into_df(blank_df,
+        assert len(CreateJobDataFrame.insert_job_information_object_into_df(blank_df,
             job_information).index) == 1
     
     def test_insert_job_information_object_into_df_row_one_contents(self, 
     blank_df: pd.DataFrame, job_information):
-     assert SaveToDataFrame.insert_job_information_object_into_df(blank_df,
-      job_information).iloc[0][0] == "Software Guy"
+     assert CreateJobDataFrame.insert_job_information_object_into_df(blank_df,
+      job_information).iloc[0][1] == "Software Guy"
 
     def test_insert_mutliple_job_information_objects_into_df(self, blank_df: pd.DataFrame, 
     job_information, job_information_2):
-        assert len(SaveToDataFrame.insert_mutliple_job_information_objects_into_df(
+        assert len(CreateJobDataFrame.insert_mutliple_job_information_objects_into_df(
             blank_df, [job_information, job_information_2]).index) == 2
     
     def test_save_df_to_csv_returns_true(self, populated_df: pd.DataFrame):
-        assert SaveToDataFrame.save_df_to_csv(populated_df,
-        file_name="C:\\Alex\\Data Analysis Projects\\Reed-Word-Search\\data\\test_file") == True
+        assert save_df_to_csv(populated_df,
+        file_name="C:\\Alex\\Data Analysis Projects\\Reed-Word-Search\\data\\test_file",
+        prepend_data_folder_to_file_name=False) == True
+    
+    def test_insert_job_information_object_into_df_no_duplicate_ids(self, blank_df: pd.DataFrame,
+    job_information):
+        CreateJobDataFrame.insert_job_information_object_into_df(blank_df, job_information)
+        CreateJobDataFrame.insert_job_information_object_into_df(blank_df, job_information)
+        assert len(blank_df.index) == 1
     
 
 class TestFormatFileName:
     def test_format_name_correct_end(self, file_name_with_csv: str):
         formatted_name = FormatFileName.format_name(file_name_with_csv) 
-        print(formatted_name)
         assert formatted_name.find(".csv") == len(formatted_name) - 4
 
     def test_format_name_raw_name_stripped(self, file_name_no_csv: str):

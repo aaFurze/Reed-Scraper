@@ -85,11 +85,17 @@ class JobContainerParser:
     def get_job_full_page_link_raw(container: BeautifulSoup) -> str:
         return container.find("a", class_="job-result-card__block-link")["href"]
 
+    @staticmethod
+    def get_job_id_raw(container: BeautifulSoup) -> str:
+        url = container.find("a", class_="job-result-card__block-link")["href"]
+        url_until_id_end = url[:url.find("?")]
+        return url_until_id_end[url_until_id_end.rfind("/"):]
+
 
 class RawJobInformationFactory:
     @staticmethod
     def get_empty_raw_job_info() -> RawJobInformation:
-        return RawJobInformation("", "", "", "", "", "", "", "")
+        return RawJobInformation("", "", "", "", "", "", "", "", "")
 
     @staticmethod
     def get_x_empty_raw_job_info_objects(x: int) -> List[RawJobInformation]:
@@ -109,6 +115,7 @@ class RawJobInformationFactory:
 
         destination.full_page_link = JobContainerParser.get_job_full_page_link_raw(container)
         destination.description_start = JobContainerParser.get_job_description_start_raw(container)
+        destination.job_id = JobContainerParser.get_job_id_raw(container)
 
         return destination
 
@@ -126,6 +133,7 @@ class RawJobInformationFactory:
 
 @dataclass
 class RawJobInformation:
+    job_id: str
     title: str
     date_and_employer: str
     salary: str

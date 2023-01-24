@@ -33,7 +33,7 @@ def salary_competitive():
 
 @pytest.fixture
 def location():
-    return " Leeds         "
+    return " Leeds, \n\r   West Yorkshire     "
 
 @pytest.fixture
 def tenure_permanent_full_time():
@@ -55,6 +55,9 @@ def remote_status_empty():
 def partial_url():
     return "  /jobs/software-engineer/48648894?source=searchResults&filter=%2fjobs%2fsoftware-engineer-jobs-in-leeds    "
 
+@pytest.fixture
+def unclean_job_id():
+    return "/5435345  "
 
 
 def test_format_job_title(dirty_string: str):
@@ -111,7 +114,7 @@ class TestFormatJobPay:
 
 class TestFormatJobWorkConditions:
     def test_format_job_location(self, location):
-        assert formatting.FormatJobWorkConditions.format_job_location(location) == "Leeds"
+        assert formatting.FormatJobWorkConditions.format_job_location(location) == "Leeds, West Yorkshire"
     
     def test_format_job_tenure_type_permanent_full_time_input(self, tenure_permanent_full_time):
         assert formatting.FormatJobWorkConditions.format_job_tenure_type(tenure_permanent_full_time) == "Permanent"
@@ -135,11 +138,12 @@ class TestFormatJobWorkConditions:
 def test_format_job_url_contains_reed(partial_url):
     assert formatting.format_job_url(partial_url).find("reed.co.uk") != -1
 
-
+def test_format_job_id_numeric(unclean_job_id: str):
+    assert type(formatting.format_job_id(unclean_job_id)) is int
 
 @pytest.fixture
 def example_raw_job_information():
-    return parse_html.RawJobInformation(title="   Software engineer", date_and_employer="5 days ago by Mega Corp",
+    return parse_html.RawJobInformation(job_id="/12456?", title="   Software engineer", date_and_employer="5 days ago by Mega Corp",
      salary="    £30,000 - £40,000 per annum ", location="Leeds", tenure_type="Permanent, full-time ",
       remote_status="   Work from home  ", description_start="This is the best company in the world...",
        full_page_link="  /jobs/software-engineer/48648894?source=searchResults&filter=%2fjobs%2fsoftware-engineer-jobs-in-leeds    ")
@@ -150,8 +154,8 @@ def example_formatted_job_information(example_raw_job_information):
 
 
 class TestFormatJobData:
-    @pytest.mark.parametrize("attribute", ["title", "date", "employer", "salary_lower", "salary_upper", "salary_type", "location", "tenure_type", "remote_status",
-     "description_start", "full_page_link"])
+    @pytest.mark.parametrize("attribute", ["job_id", "title", "date", "employer", "salary_lower", "salary_upper", "salary_type", "location", "tenure_type",
+     "remote_status", "description_start", "full_page_link"])
 
     def test_raw_job_info_to_formatted_job_info_fills_attributes(self, example_formatted_job_information, attribute):
         assert getattr(example_formatted_job_information, attribute) != ""
