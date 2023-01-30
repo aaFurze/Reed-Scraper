@@ -9,19 +9,19 @@ import src.scraper as scraper
 
 @pytest.fixture(scope="module")
 def get_reed_webpages() -> httpx.Response:
-    return scraper.ReedJobPostingsScraper.get_job_postings("software-engineer", "leeds", 25, 10)
+    return scraper.ReedSearchPageScraper.get_job_postings("software-engineer", "leeds", 25, 10)
 
 @pytest.fixture
 def get_non_existant_webpages():
-    return scraper.ReedJobPostingsScraper.get_job_postings("zzczcz-czzc", "highlands", 0, 1)
+    return scraper.ReedSearchPageScraper.get_job_postings("zzczcz-czzc", "highlands", 0, 1)
 
 @pytest.fixture
 def get_zero_input_webpages():
-    return scraper.ReedJobPostingsScraper.get_job_postings("teacher", "highlands", 5, 0)
+    return scraper.ReedSearchPageScraper.get_job_postings("teacher", "highlands", 5, 0)
 
 
 
-class TestReedJobPostingsScraper:
+class TestReedSearchPageScraper:
     def test_get_reed_webpage_status_code(self, get_reed_webpages: List[httpx.Response]):
         assert get_reed_webpages[0].status_code == 200
 
@@ -41,10 +41,21 @@ class TestReedJobPostingsScraper:
 
 
     def test_get_number_of_job_postings_exists(self, get_non_existant_webpages: List[httpx.Response]):
-        assert scraper.ReedJobPostingsScraper._get_number_of_job_postings(get_non_existant_webpages[0]) == 0
+        assert scraper.ReedSearchPageScraper._get_number_of_job_postings(get_non_existant_webpages[0]) == 0
 
 
     @pytest.mark.parametrize("test_number_of_jobs, test_max_pages, expected_result", [(120, 20, 5), (11, 20, 1), (111, 1, 1)])
     def test_get_number_of_pages_to_return(self, test_number_of_jobs, test_max_pages, expected_result):
-        assert scraper.ReedJobPostingsScraper._get_number_of_pages_to_return(number_of_jobs=test_number_of_jobs,
+        assert scraper.ReedSearchPageScraper._get_number_of_pages_to_return(number_of_jobs=test_number_of_jobs,
             max_pages=test_max_pages) == expected_result
+
+
+
+class TestReedJobPageScraper:
+    def test_get_job_pages_returns_list(self):
+        assert type(scraper.ReedJobPageScraper.get_job_pages([543543, 554334])) is list
+    
+    def test_get_job_pages_returns_httpx_responses(self):
+        result = scraper.ReedJobPageScraper.get_job_pages([123, 321])
+        for value in result:
+            assert type(value) is httpx.Response

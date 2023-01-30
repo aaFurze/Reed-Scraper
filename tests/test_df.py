@@ -3,20 +3,26 @@ import datetime
 import pandas as pd
 import pytest
 
-from src.df import COLUMNS, CreateJobDataFrame, FormatFileName, save_df_to_csv
-from src.formatting import FormattedJobInformation
+from src.df import (COLUMNS, EXTRA_COLUMNS, CreateJobDataFrame, FormatFileName,
+                    save_df_to_csv)
+from src.formatting import (FormattedExtraJobInformation,
+                            FormattedJobInformation)
 
 
 @pytest.fixture
-def blank_df() -> pd.DataFrame:
+def blank_df_normal() -> pd.DataFrame:
     return CreateJobDataFrame.create_blank_df()
+
+@pytest.fixture
+def blank_df_detailed() -> pd.DataFrame:
+    return CreateJobDataFrame.create_blank_df(detailed_columns=True)
 
 @pytest.fixture
 def job_information():
     return FormattedJobInformation(12345, "Software Guy", datetime.datetime.date(
         datetime.datetime(year=2022, month=11, day=24)), employer="Big Tech", salary_lower=123.32,
         salary_upper=146.42, salary_type="daily", location="Telford",
-        remote_status="remote", description_start="This is a cool job...",
+        remote_status="remote", description_start="This is a good job...",
         full_page_link="this_doesnt_go_anywhere.com", tenure_type="Full-time")
 
 @pytest.fixture
@@ -28,8 +34,18 @@ def job_information_2():
         full_page_link="this_doesnt_go_anywhere_either.com", tenure_type="Full-time")
 
 @pytest.fixture
-def populated_df(blank_df, job_information, job_information_2) -> pd.DataFrame:
-    return CreateJobDataFrame.insert_mutliple_job_information_objects_into_df(blank_df,
+def detailed_job_information():
+    return FormattedExtraJobInformation(12345, "10+",
+     "This is a good job that you would enjoy.")
+
+@pytest.fixture
+def detailed_job_information_2():
+    return FormattedExtraJobInformation(987654, "<10",
+     "This is an exciting job that you would like.")
+
+@pytest.fixture
+def populated_df(blank_df_normal, job_information, job_information_2) -> pd.DataFrame:
+    return CreateJobDataFrame.insert_mutliple_job_information_objects_into_df(blank_df_normal,
     [job_information, job_information_2])
 
 
@@ -48,38 +64,75 @@ def test_date() -> datetime.datetime:
 
 
 class TestCreateJobDataFrame():
-    def test_create_blank_df_column_count(self, blank_df: pd.DataFrame):
-        assert len(blank_df.columns) == 12
+    def test_create_blank_df_column_count(self, blank_df_normal: pd.DataFrame):
+        assert len(blank_df_normal.columns) == 12
     
-    def test_create_blank_df_column_names(self, blank_df: pd.DataFrame):
-        assert list(blank_df.columns) == COLUMNS 
-    
-    def test_insert_job_information_object_into_df_length(self, blank_df: pd.DataFrame,
+    def test_create_blank_df_column_names(self, blank_df_normal: pd.DataFrame):
+        assert list(blank_df_normal.columns) == COLUMNS 
+
+    def test_insert_job_information_object_into_df_length(self, blank_df_normal: pd.DataFrame,
      job_information):
-        assert len(CreateJobDataFrame.insert_job_information_object_into_df(blank_df,
+        assert len(CreateJobDataFrame.insert_job_information_object_into_df(blank_df_normal,
             job_information).index) == 1
-    
+
     def test_insert_job_information_object_into_df_row_one_contents(self, 
-    blank_df: pd.DataFrame, job_information):
-     assert CreateJobDataFrame.insert_job_information_object_into_df(blank_df,
+    blank_df_normal: pd.DataFrame, job_information):
+     assert CreateJobDataFrame.insert_job_information_object_into_df(blank_df_normal,
       job_information).iloc[0][1] == "Software Guy"
 
-    def test_insert_mutliple_job_information_objects_into_df(self, blank_df: pd.DataFrame, 
+    def test_insert_mutliple_job_information_objects_into_df(self, blank_df_normal: pd.DataFrame, 
     job_information, job_information_2):
         assert len(CreateJobDataFrame.insert_mutliple_job_information_objects_into_df(
-            blank_df, [job_information, job_information_2]).index) == 2
+            blank_df_normal, [job_information, job_information_2]).index) == 2
     
     def test_save_df_to_csv_returns_true(self, populated_df: pd.DataFrame):
         assert save_df_to_csv(populated_df,
         file_name="C:\\Alex\\Data Analysis Projects\\Reed-Word-Search\\data\\test_file",
         prepend_data_folder_to_file_name=False) == True
     
-    def test_insert_job_information_object_into_df_no_duplicate_ids(self, blank_df: pd.DataFrame,
+    def test_insert_job_information_object_into_df_no_duplicate_ids(self, blank_df_normal: pd.DataFrame,
     job_information):
-        CreateJobDataFrame.insert_job_information_object_into_df(blank_df, job_information)
-        CreateJobDataFrame.insert_job_information_object_into_df(blank_df, job_information)
-        assert len(blank_df.index) == 1
+        CreateJobDataFrame.insert_job_information_object_into_df(blank_df_normal, job_information)
+        CreateJobDataFrame.insert_job_information_object_into_df(blank_df_normal, job_information)
+        assert len(blank_df_normal.index) == 1
+
+
+
+    def test_create_blank_df_detailed_column_count(self, blank_df_detailed: pd.DataFrame):
+        assert len(blank_df_detailed.columns) == 14
     
+    def test_create_blank_df_detailed_column_names(self, blank_df_detailed: pd.DataFrame):
+        assert list(blank_df_detailed.columns) == COLUMNS + EXTRA_COLUMNS 
+
+    def test_insert_detailed_job_information_object_into_df_length(self,
+     blank_df_detailed: pd.DataFrame, job_information, detailed_job_information):
+        assert len(CreateJobDataFrame.insert_detailed_job_information_object_into_df(blank_df_detailed,
+            job_information, detailed_job_information).index) == 1
+
+    def test_insert_detailed_job_information_object_into_df_row_one_contents(self, 
+     blank_df_detailed: pd.DataFrame, job_information, detailed_job_information):
+     assert CreateJobDataFrame.insert_detailed_job_information_object_into_df(blank_df_detailed,
+      job_information, detailed_job_information).iloc[0][1] == "Software Guy"
+    
+    def test_insert_detailed_job_information_object_into_df_second_last_row_contents(self, 
+     blank_df_detailed: pd.DataFrame, job_information, detailed_job_information):
+     assert CreateJobDataFrame.insert_detailed_job_information_object_into_df(blank_df_detailed,
+      job_information, detailed_job_information).iloc[0][-2] == "10+"
+
+    def test_insert_mutliple_detailed_job_information_objects_into_df(self, blank_df_detailed: pd.DataFrame, 
+     job_information, job_information_2, detailed_job_information, detailed_job_information_2):
+        assert len(CreateJobDataFrame.insert_mutliple_detailed_job_information_objects_into_df(
+            blank_df_detailed, [job_information, job_information_2],
+             [detailed_job_information, detailed_job_information_2]).index) == 2
+    
+    def test_insert_detailed_job_information_object_into_df_no_duplicate_ids(self, blank_df_detailed: pd.DataFrame,
+     job_information, detailed_job_information):
+        CreateJobDataFrame.insert_detailed_job_information_object_into_df(blank_df_detailed,
+         job_information, detailed_job_information)
+        CreateJobDataFrame.insert_detailed_job_information_object_into_df(blank_df_detailed,
+         job_information, detailed_job_information)
+        assert len(blank_df_detailed.index) == 1
+
 
 class TestFormatFileName:
     def test_format_name_correct_end(self, file_name_with_csv: str):

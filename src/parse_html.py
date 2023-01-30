@@ -11,15 +11,19 @@ class ResponseToContainers:
     @staticmethod    
     def soupify_page(response: httpx.Response) -> BeautifulSoup:
         return BeautifulSoup(response.text, "lxml")
+    
+    @staticmethod
+    def soupify_page_text(text: str) -> BeautifulSoup:
+        return BeautifulSoup(text, "lxml")
 
     @staticmethod
-    def get_job_posting_containers(html: BeautifulSoup) -> List[BeautifulSoup]:
+    def get_job_summary_containers(html: BeautifulSoup) -> List[BeautifulSoup]:
         return html.find_all("article", class_="job-result-card")
     
     @staticmethod
-    def response_to_job_posting_containers(response: httpx.Response) -> List[BeautifulSoup]:
+    def response_to_job_summary_containers(response: httpx.Response) -> List[BeautifulSoup]:
         page = ResponseToContainers.soupify_page(response)
-        return ResponseToContainers.get_job_posting_containers(page)
+        return ResponseToContainers.get_job_summary_containers(page)
 
     @staticmethod
     def responses_to_job_posting_containers(responses: List[httpx.Response]) -> List[BeautifulSoup]:
@@ -27,9 +31,23 @@ class ResponseToContainers:
 
         for response in responses:
             page = ResponseToContainers.soupify_page(response)
-            output += ResponseToContainers.get_job_posting_containers(page)
+            output += ResponseToContainers.get_job_summary_containers(page)
         
         return output
+    
+    @classmethod
+    def response_to_detailed_job_posting_container(cls,
+     response: httpx.Response) -> BeautifulSoup:
+        page = cls.soupify_page(response)
+        return cls.get_detailed_job_posting_container(page)
+
+
+    @staticmethod
+    def get_detailed_job_posting_container(html: BeautifulSoup) -> BeautifulSoup:
+        standard_container = html.find("div", class_="description-container")
+        if not standard_container: 
+            return html.find("div", class_="branded-job-details--container")
+        return standard_container
 
 
 class JobContainerParser:
@@ -130,7 +148,6 @@ class RawJobInformationFactory:
 
 
 
-
 @dataclass
 class RawJobInformation:
     job_id: str
@@ -142,3 +159,56 @@ class RawJobInformation:
     remote_status: str
     description_start: str
     full_page_link: str
+
+
+
+class DetailedJobContainerParser:
+
+    @classmethod
+    def get_raw_extra_job_information_object(cls, job_id: int, response: httpx.Response):
+        page_html = ResponseToContainers.response_to_detailed_job_posting_container(response)
+        applicants_raw = cls.get_number_of_applicants_raw(page_html)
+        description_raw = cls.get_job_full_description_raw(page_html)
+
+        return RawExtraJobInformation(job_id=job_id,
+         number_of_applicants=applicants_raw, description=description_raw)
+
+
+
+    @staticmethod
+    def get_number_of_applicants_raw(details_container: BeautifulSoup) -> str:
+        if details_container is None: return ""
+        
+        applicants_container = details_container.find("div", class_="applications")
+        if not applicants_container: 
+            applicants_container = details_container.find_all("div", class_="job-info--optional-icons")[-1]
+            if not applicants_container: return ""
+            applicants_container = applicants_container.find("span")
+        
+        return applicants_container.text.strip()
+
+    @classmethod
+    def get_job_full_description_raw(cls, details_container: BeautifulSoup) -> str:
+        description_container = details_container.find("span", itemprop="description")
+        output_text = ""
+        for child in description_container.findChildren():
+            output_text = cls._add_text_or_space_depending_on_duplicate(output_text, child.text)
+        return output_text.strip()
+
+    @staticmethod
+    def _add_text_or_space_depending_on_duplicate(original: str, to_add: str):
+        match_value = original.find(to_add)
+        if (match_value) == -1:
+            original += f"{to_add} "
+        else:
+            original = original[: match_value] + " " + original[match_value: ]
+        
+        return original
+
+
+
+@dataclass
+class RawExtraJobInformation:
+    job_id: str
+    description: str
+    number_of_applicants: str
