@@ -181,9 +181,9 @@ class DetailedJobContainerParser:
         
         applicants_container = details_container.find("div", class_="applications")
         if not applicants_container: 
-            applicants_container = details_container.find_all("div", class_="job-info--optional-icons")[-1]
+            applicants_container = details_container.find_all("div", class_="job-info--optional-icons")
             if not applicants_container: return ""
-            applicants_container = applicants_container.find("span")
+            applicants_container = applicants_container[-1].find("span")
         
         return applicants_container.text.strip()
 
