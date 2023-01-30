@@ -14,6 +14,7 @@ def standard_pipeline() -> JobDataPipeline:
 @pytest.fixture(scope="module")
 def detailed_pipeline(standard_pipeline: JobDataPipeline) -> DetailedJobDataPipeline:
     test_pipeline = DetailedJobDataPipeline()
+    print([container.job_id for container in standard_pipeline.formatted_results])
     test_pipeline.run(job_ids=[container.job_id for container in standard_pipeline.formatted_results])
     return test_pipeline
 
@@ -39,8 +40,7 @@ class TestDetailedJobDataPipeline:
     def test_scraper_returns_httpx_responses(self, detailed_pipeline: DetailedJobDataPipeline):
         for response in detailed_pipeline.scraped_responses:
             assert type(response) is httpx.Response
-        # assert type(detailed_pipeline.scraped_responses[index]) is httpx.Response
-    
+            
     def test_scraper_status_codes_equal_200(self, detailed_pipeline: DetailedJobDataPipeline):
         for response in detailed_pipeline.scraped_responses:
             assert response.status_code == 200
