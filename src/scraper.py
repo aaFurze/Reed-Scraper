@@ -63,6 +63,10 @@ class ReedSearchPageScraper:
         return int(num_pages)
 
 
+"""
+TODO: Add limit to number of pages can retrive (~= 50). Retrieving too many does not work
+as Reed has Cloudflare for > 75 visits in a short period.
+"""
 class ReedJobPageScraper:
 
     URL_CONSTRUCTOR = ConstructJobPageUrl
@@ -75,8 +79,17 @@ class ReedJobPageScraper:
     @classmethod
     async def _get_job_pages_responses(cls, job_ids: List[int]) -> List[httpx.Response]:
         output = []
+        cloudflare_limit_counter = 0
+        
         async with httpx.AsyncClient() as client:
             for job_id in job_ids:
+
+                cloudflare_limit_counter += 1
+                if cloudflare_limit_counter == 50: print("Page Limit reached. Cannot retrieve any more detailed job description and applicants information. Normal information will still be collected.")
+                if cloudflare_limit_counter > 50: 
+                    output.append("")
+                    continue
+
                 print(f"Retrieving job (id={job_id}).")
                 response = await client.get(cls.URL_CONSTRUCTOR.get_url(job_id),
                  timeout=cls.DEFAULT_TIMEOUT_OBJ)

@@ -166,12 +166,19 @@ class DetailedJobContainerParser:
 
     @classmethod
     def get_raw_extra_job_information_object(cls, job_id: int, response: httpx.Response):
-        page_html = ResponseToContainers.response_to_detailed_job_posting_container(response)
-        applicants_raw = cls.get_number_of_applicants_raw(page_html)
-        description_raw = cls.get_job_full_description_raw(page_html)
+        # Attribute occasionally comes up due to page_html not being found.
+        # Happens when try to retrieve > 75 pages, causing Cloudflare to activate.
+        try:
+            page_html = ResponseToContainers.response_to_detailed_job_posting_container(response)
+            applicants_raw = cls.get_number_of_applicants_raw(page_html)
+            description_raw = cls.get_job_full_description_raw(page_html)
 
-        return RawExtraJobInformation(job_id=job_id,
-         number_of_applicants=applicants_raw, description=description_raw)
+            return RawExtraJobInformation(job_id=job_id,
+            number_of_applicants=applicants_raw, description=description_raw)
+            
+        except AttributeError:
+            return RawExtraJobInformation(job_id=job_id,
+             number_of_applicants="N/A", description="N/A")
 
 
 
