@@ -13,7 +13,7 @@ class ResponseToContainers:
         return BeautifulSoup(response.text, "lxml")
     
     @staticmethod
-    def soupify_page_text(text: str) -> BeautifulSoup:
+    def soupify_page_html(text: str) -> BeautifulSoup:
         return BeautifulSoup(text, "lxml")
 
     @staticmethod
@@ -111,13 +111,6 @@ class JobContainerParser:
 
 
 class RawJobInformationFactory:
-    @staticmethod
-    def get_empty_raw_job_info() -> RawJobInformation:
-        return RawJobInformation("", "", "", "", "", "", "", "", "")
-
-    @staticmethod
-    def get_x_empty_raw_job_info_objects(x: int) -> List[RawJobInformation]:
-        return [RawJobInformationFactory.get_empty_raw_job_info() for _ in range(x)]
 
     @staticmethod
     def populate_raw_job_information_from_job_container(destination: RawJobInformation, container: BeautifulSoup) -> RawJobInformation:
@@ -140,11 +133,19 @@ class RawJobInformationFactory:
     @staticmethod
     def get_multiple_populated_raw_job_info_objects(responses: List[httpx.Response]) -> List[RawJobInformation]:
         containers = ResponseToContainers.responses_to_job_posting_containers(responses)
-        raw_job_info_objects = RawJobInformationFactory.get_x_empty_raw_job_info_objects(len(containers))
+        raw_job_info_objects = RawJobInformationFactory._get_x_empty_raw_job_info_objects(len(containers))
         for i in range(len(containers)):
             RawJobInformationFactory.populate_raw_job_information_from_job_container(raw_job_info_objects[i], containers[i])
 
         return raw_job_info_objects
+
+    @staticmethod
+    def _get_x_empty_raw_job_info_objects(x: int) -> List[RawJobInformation]:
+        return [RawJobInformationFactory._get_empty_raw_job_info() for _ in range(x)]
+
+    @staticmethod
+    def _get_empty_raw_job_info() -> RawJobInformation:
+        return RawJobInformation("", "", "", "", "", "", "", "", "")
 
 
 

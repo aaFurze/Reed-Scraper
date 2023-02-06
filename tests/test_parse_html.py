@@ -28,7 +28,7 @@ def get_job(get_job_containers):
 
 @pytest.fixture
 def get_raw_job_information(get_job) -> RawJobInformation:
-    return RawJobInformationFactory.populate_raw_job_information_from_job_container(RawJobInformationFactory.get_empty_raw_job_info(), get_job)
+    return RawJobInformationFactory.populate_raw_job_information_from_job_container(RawJobInformationFactory._get_empty_raw_job_info(), get_job)
 
 
 
@@ -321,7 +321,7 @@ def job_page_detailed_html() -> BeautifulSoup:
 </aside>
 </div>
 """
-    return ResponseToContainers.soupify_page_text(detailed_job_description_mock)
+    return ResponseToContainers.soupify_page_html(detailed_job_description_mock)
 
 @pytest.fixture
 def job_page_detailed_html_promotional() -> BeautifulSoup:
@@ -485,7 +485,7 @@ def job_page_detailed_html_promotional() -> BeautifulSoup:
         </div>
     </div>
     """
-    return ResponseToContainers.soupify_page_text(detailed_job_description_promotion_mock)
+    return ResponseToContainers.soupify_page_html(detailed_job_description_promotion_mock)
 
 
 
@@ -565,10 +565,10 @@ class TestJobContainerParser:
 
 class TestRawJobInformationFactory:
     def test_get_empty_raw_job_info_returns_correct_type(self):
-        assert type(RawJobInformationFactory.get_empty_raw_job_info()) is RawJobInformation
+        assert type(RawJobInformationFactory._get_empty_raw_job_info()) is RawJobInformation
     
     def test_get_x_empty_raw_job_info_containers_correct_length(self):
-        assert len(RawJobInformationFactory.get_x_empty_raw_job_info_objects(12)) == 12
+        assert len(RawJobInformationFactory._get_x_empty_raw_job_info_objects(12)) == 12
     
     def test_populate_raw_job_information_from_job_container_title(self, get_raw_job_information: RawJobInformation, get_job: BeautifulSoup):
         assert get_raw_job_information.title == JobContainerParser.get_job_title(get_job)

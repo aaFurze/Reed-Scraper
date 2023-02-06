@@ -8,12 +8,6 @@ from typing_extensions import Protocol
 
 BASE_URL = "https://reed.co.uk"
 
-"""
-Todo: Remove redundant redirect information from full_page_link values.
-"""
-
-
-
 
 def raw_to_formatted_job_information(r: RawJobInformation) -> FormattedJobInformation:
     """
@@ -131,6 +125,16 @@ class FormatJobPay:
         return output
 
     @staticmethod
+    def format_job_salary_type(salary_raw: str) -> str:
+        parsing_mode = FormatJobPay._get_salary_parsing_mode(salary_raw)
+
+        if parsing_mode > 3: return salary_raw.strip()
+
+        salary_types = {0: "annual", 1: "daily", 2: "competitive", 3: "negotiable"}
+
+        return salary_types[parsing_mode]
+    
+    @staticmethod
     def _get_salary_figures(salary_raw: str):
         money_values = salary_raw.strip()[1 : salary_raw.find(" per")]
         if salary_raw.find("-") != -1:
@@ -157,19 +161,8 @@ class FormatJobPay:
         return [cleaned_value, cleaned_value]
 
     @staticmethod
-    def format_job_salary_type(salary_raw: str) -> str:
-        parsing_mode = FormatJobPay._get_salary_parsing_mode(salary_raw)
-
-        if parsing_mode == 0: output = "annual"
-        elif parsing_mode == 1: output = "daily"
-        elif parsing_mode == 2: output = "competitive"
-        elif parsing_mode == 3: output = "negotiable"
-        else: output = salary_raw.strip()
-
-        return output
-    
-    @staticmethod
     def _get_salary_parsing_mode(salary_raw: str):
+
         if salary_raw.find("annum") != -1: return 0
         if salary_raw.find("day") != -1: return 1
         if salary_raw.find("Competitive") != -1: return 2
@@ -229,16 +222,6 @@ def format_job_id(raw_id: str) -> int:
 
 
 
-def raw_to_formatted_extra_job_information(raw: RawExtraJobInformation):
-    number_of_applicants = FormatExtraJobData.format_job_number_of_applicants(
-        raw.number_of_applicants)
-    description = FormatExtraJobData.format_job_description_full(raw.description)
-
-    return FormattedExtraJobInformation(job_id=raw.job_id,
-    description=description, number_of_applicants=number_of_applicants)
-
-
-
 class RawExtraJobInformation(Protocol):
     job_id: str
     description: str
@@ -258,19 +241,25 @@ class FormattedExtraJobInformation:
 
 class FormatExtraJobData:
 
-    VALID_SYMBOLS = [
-        ".", "-", ",", ":", ";", "£", "$",
-        "€", "&", "%", "(", ")", "/"
-        ]
+    VALID_SYMBOLS = [".", "-", ",", ":", ";", "£", "$", "€", "&", "%", "(", ")", "/"]
+
+    @classmethod
+    def raw_to_formatted_extra_job_information(cls, raw: RawExtraJobInformation):
+        number_of_applicants = FormatExtraJobData._format_job_number_of_applicants(
+            raw.number_of_applicants)
+        description = FormatExtraJobData._format_job_description_full(raw.description)
+
+        return FormattedExtraJobInformation(job_id=raw.job_id,
+        description=description, number_of_applicants=number_of_applicants)
 
     @staticmethod
-    def format_job_number_of_applicants(applicants_raw: str) -> str:
+    def _format_job_number_of_applicants(applicants_raw: str) -> str:
         if applicants_raw == "Be one of the first ten applicants": return "<10"
         if applicants_raw == "": return "10+"
         return applicants_raw
 
     @classmethod
-    def format_job_description_full(cls, description_raw: str):
+    def _format_job_description_full(cls, description_raw: str):
         output = ""
         for char in description_raw:
             if not cls._is_valid_char(char): continue

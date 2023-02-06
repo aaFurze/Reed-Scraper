@@ -10,12 +10,17 @@ def run():
     pipeline.run(job_title= user_input.job_title, location=user_input.location,
      search_radius=user_input.search_radius, max_pages=user_input.max_pages)
 
-    detailed_pipeline = DetailedJobDataPipeline()
-    detailed_pipeline.run([result.job_id for result in pipeline.formatted_results])
+    df = CreateJobDataFrame.create_blank_df(detailed_columns=user_input.get_description)
 
-    df = CreateJobDataFrame.create_blank_df(detailed_columns=True)
-    CreateJobDataFrame.insert_mutliple_detailed_job_information_objects_into_df(df, 
-        pipeline.formatted_results, detailed_job_infos=detailed_pipeline.formatted_results)
+    if user_input.get_description:
+        detailed_pipeline = DetailedJobDataPipeline()
+        detailed_pipeline.run([result.job_id for result in pipeline.formatted_results])
+
+        CreateJobDataFrame.insert_mutliple_detailed_job_information_objects_into_df(df, 
+            pipeline.formatted_results, detailed_job_infos=detailed_pipeline.formatted_results)
+    else:
+        CreateJobDataFrame.insert_mutliple_job_information_objects_into_df(df, pipeline.formatted_results)
+
     save_df_to_csv(df, user_input.save_name)
 
 

@@ -197,8 +197,8 @@ class TestFormatDetailedJobData:
     @pytest.mark.parametrize("raw, expected", [("", "10+"),
      ("Be one of the first ten applicants", "<10")])
     def test_format_job_number_of_applicants(self, raw: str, expected: str):
-        assert formatting.FormatExtraJobData.format_job_number_of_applicants(raw) == expected
+        assert formatting.FormatExtraJobData._format_job_number_of_applicants(raw) == expected
 
     def test_format_job_description_full_standard(self, example_description_raw: str):
-        assert formatting.FormatExtraJobData.format_job_description_full(
+        assert formatting.FormatExtraJobData._format_job_description_full(
             example_description_raw).find("Software Engineer Positions available from junior level up to principal/tech lead level") != -1

@@ -30,11 +30,11 @@ class TestGetUserInput:
         ("dirty_location", "bradford"), ("dirty_location_2", "south-yorkshire")])
     def test_clean_input_string(self, key: str, cleaned_string: str,
      dirty_strings: Dict[str, str]):
-        assert GetUserInput.clean_input_string(dirty_strings[key]) == cleaned_string
+        assert GetUserInput._clean_input_string(dirty_strings[key]) == cleaned_string
     
     @pytest.mark.parametrize("key, cleaned_int", [
         ("dirty_search_radius", 43), ("dirty_search_radius_2", 56),
         ("dirty_max_results", 26), ("dirty_max_results_2", 56)])
     def test_clean_input_int(self, key: str, cleaned_int: str,
      dirty_ints: Dict[str, str]):
-        assert GetUserInput.clean_input_int(dirty_ints[key]) == cleaned_int
+        assert GetUserInput._clean_input_int(dirty_ints[key]) == cleaned_int

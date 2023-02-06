@@ -44,19 +44,19 @@ class TestConstructSearchPageUrl:
 
     def test_get_job_name_url_segment_standard(self, target_url_standard: str, standard_input_dict: dict):
         assert target_url_standard.find(
-            ConstructSearchPageUrl.get_job_name_url_segment(standard_input_dict["job_name"])) != -1
+            ConstructSearchPageUrl._get_job_name_url_segment(standard_input_dict["job_name"])) != -1
     
     def test_get_search_radius_url_segment_standard(self, target_url_standard: str, standard_input_dict: dict):
        assert target_url_standard.find(
-            ConstructSearchPageUrl.get_search_radius_url_segment(standard_input_dict["search_radius"])) != -1
+            ConstructSearchPageUrl._get_search_radius_url_segment(standard_input_dict["search_radius"])) != -1
 
     def test_get_page_number_url_segment_standard(self, target_url_standard: str, standard_input_dict: dict):
         assert target_url_standard.find(
-            ConstructSearchPageUrl.get_page_number_url_segment(standard_input_dict["page_number"])) != -1
+            ConstructSearchPageUrl._get_page_number_url_segment(standard_input_dict["page_number"])) != -1
 
     def test_get_location_url_segment_standard(self, target_url_standard: str, standard_input_dict: dict):
         assert target_url_standard.find(
-            ConstructSearchPageUrl.get_location_url_segment(standard_input_dict["location"])) != -1
+            ConstructSearchPageUrl._get_location_url_segment(standard_input_dict["location"])) != -1
 
     def test_get_url_contains_question_mark(self, standard_input_dict: dict):
         test_url = ConstructSearchPageUrl.get_url(**standard_input_dict)
@@ -77,19 +77,19 @@ class TestConstructSearchPageUrl:
 
     def test_get_job_name_url_segment_special(self, target_url_special_case: str, special_case_input_dict: dict):
         assert target_url_special_case.find(
-            ConstructSearchPageUrl.get_job_name_url_segment(special_case_input_dict["job_name"])) != -1
+            ConstructSearchPageUrl._get_job_name_url_segment(special_case_input_dict["job_name"])) != -1
     
     def test_get_search_radius_url_segment_special(self, special_case_input_dict: dict):
-       assert ConstructSearchPageUrl.get_search_radius_url_segment(
+       assert ConstructSearchPageUrl._get_search_radius_url_segment(
         special_case_input_dict["search_radius"]) == ""
 
     def test_get_page_number_url_segment_special(self, special_case_input_dict: dict):
-        assert ConstructSearchPageUrl.get_page_number_url_segment(
+        assert ConstructSearchPageUrl._get_page_number_url_segment(
             special_case_input_dict["page_number"]) == ""
 
     def test_get_location_url_segment_special(self, target_url_special_case: str, special_case_input_dict: dict):
         assert target_url_special_case.find(
-            ConstructSearchPageUrl.get_location_url_segment(special_case_input_dict["location"])) != -1
+            ConstructSearchPageUrl._get_location_url_segment(special_case_input_dict["location"])) != -1
 
 
 class TestConstructJobPageUrl:

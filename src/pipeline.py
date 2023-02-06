@@ -2,9 +2,8 @@ from typing import List
 
 import httpx
 
-from src.formatting import (FormattedExtraJobInformation,
+from src.formatting import (FormatExtraJobData, FormattedExtraJobInformation,
                             FormattedJobInformation,
-                            raw_to_formatted_extra_job_information,
                             raw_to_formatted_job_information)
 from src.parse_html import (DetailedJobContainerParser, RawExtraJobInformation,
                             RawJobInformation, RawJobInformationFactory)
@@ -34,7 +33,7 @@ class DetailedJobDataPipeline:
         self.scraped_responses = ReedJobPageScraper.get_job_pages(job_ids=job_ids)
         self.raw_results = self._get_raw_results(job_ids=job_ids,
          responses=self.scraped_responses)
-        self.formatted_results = [raw_to_formatted_extra_job_information(raw_data)
+        self.formatted_results = [FormatExtraJobData.raw_to_formatted_extra_job_information(raw_data)
          for raw_data in self.raw_results]
 
     @staticmethod
