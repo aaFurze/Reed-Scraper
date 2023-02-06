@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
-from src.parse_html import RawJobInformation
 from src.pipeline import DetailedJobDataPipeline, JobDataPipeline
+from src.search_page import RawJobInformation
 
 
 @pytest.fixture(scope="module")

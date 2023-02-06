@@ -5,8 +5,8 @@ import pytest
 
 from src.df import (COLUMNS, EXTRA_COLUMNS, CreateJobDataFrame, FormatFileName,
                     save_df_to_csv)
-from src.formatting import (FormattedExtraJobInformation,
-                            FormattedJobInformation)
+from src.job_page import FormattedExtraJobInformation
+from src.search_page import FormattedJobInformation
 
 
 @pytest.fixture

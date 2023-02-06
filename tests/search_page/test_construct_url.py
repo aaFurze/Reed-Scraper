@@ -1,6 +1,6 @@
 import pytest
 
-from src.construct_url import ConstructJobPageUrl, ConstructSearchPageUrl
+from src.search_page.construct_url import ConstructSearchPageUrl
 
 
 @pytest.fixture
@@ -90,13 +90,3 @@ class TestConstructSearchPageUrl:
     def test_get_location_url_segment_special(self, target_url_special_case: str, special_case_input_dict: dict):
         assert target_url_special_case.find(
             ConstructSearchPageUrl._get_location_url_segment(special_case_input_dict["location"])) != -1
-
-
-class TestConstructJobPageUrl:
-    @pytest.mark.parametrize("job_id", [423423, 324234, 32423, 909432901778])
-    def test_get_url_contains_job_id(self, job_id):
-        assert ConstructJobPageUrl.get_url(job_id=job_id).find(str(job_id)) != -1
-
-    def test_get_url_contains_base_url(self):
-        assert ConstructJobPageUrl.get_url(43234).find(ConstructJobPageUrl.BASE_URL) != -1
-

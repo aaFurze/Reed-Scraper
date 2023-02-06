@@ -4,7 +4,7 @@ from typing import List
 import httpx
 import pytest
 
-import src.scraper as scraper
+import src.search_page.scraper as scraper
 
 
 @pytest.fixture(scope="module")
@@ -48,14 +48,3 @@ class TestReedSearchPageScraper:
     def test_get_number_of_pages_to_return(self, test_number_of_jobs, test_max_pages, expected_result):
         assert scraper.ReedSearchPageScraper._get_number_of_pages_to_return(number_of_jobs=test_number_of_jobs,
             max_pages=test_max_pages) == expected_result
-
-
-
-class TestReedJobPageScraper:
-    def test_get_job_pages_returns_list(self):
-        assert type(scraper.ReedJobPageScraper.get_job_pages([543543, 554334])) is list
-    
-    def test_get_job_pages_returns_httpx_responses(self):
-        result = scraper.ReedJobPageScraper.get_job_pages([123, 321])
-        for value in result:
-            assert type(value) is httpx.Response

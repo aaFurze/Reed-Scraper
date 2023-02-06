@@ -2,12 +2,8 @@ from typing import List
 
 import httpx
 
-from src.formatting import (FormatExtraJobData, FormattedExtraJobInformation,
-                            FormattedJobInformation,
-                            raw_to_formatted_job_information)
-from src.parse_html import (DetailedJobContainerParser, RawExtraJobInformation,
-                            RawJobInformation, RawJobInformationFactory)
-from src.scraper import ReedJobPageScraper, ReedSearchPageScraper
+from src.job_page import *
+from src.search_page import *
 
 
 class JobDataPipeline:
