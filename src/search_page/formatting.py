@@ -9,29 +9,58 @@ from typing_extensions import Protocol
 BASE_URL = "https://reed.co.uk"
 
 
-def raw_to_formatted_job_information(r: RawJobInformation) -> FormattedJobInformation:
+def multiple_raw_to_formatted_job_information(raw_data : List[RawJobInformation],
+ raw_description_data: List[RawJobDescriptionInformation]) -> List[FormattedJobInformation]:
+
+    output = []
+
+    for i in range(len(raw_data)):
+        if raw_description_data is not None:
+            output.append(raw_to_formatted_job_information(raw_data=raw_data[i],
+             raw_description_data=raw_description_data[i]))
+        else:
+            output.append(raw_to_formatted_job_information(raw_data=raw_data[i],
+            raw_description_data=None))
+    
+    return output
+
+
+def raw_to_formatted_job_information(raw_data: RawJobInformation,
+ raw_description_data: RawJobDescriptionInformation = None) -> FormattedJobInformation:
     """
     Formats any data collected for a Reed job advertisement and cleans it into a presentable format.
     """
-    job_id = format_job_id(r.job_id)
-    title = format_job_title(r.title)
-    date = FormatJobDatePosted.format_job_posted_date(r.date_and_employer)
-    employer = format_job_employer(r.date_and_employer)
+    job_id = format_job_id(raw_data.job_id)
+    title = format_job_title(raw_data.title)
+    date = FormatJobDatePosted.format_job_posted_date(raw_data.date_and_employer)
+    employer = format_job_employer(raw_data.date_and_employer)
 
-    salary_lower, salary_upper = FormatJobPay.format_job_salary_range(r.salary)
-    salary_type = FormatJobPay.format_job_salary_type(r.salary)
-    location = FormatJobWorkConditions.format_job_location(r.location)
+    salary_lower, salary_upper = FormatJobPay.format_job_salary_range(raw_data.salary)
+    salary_type = FormatJobPay.format_job_salary_type(raw_data.salary)
+    location = FormatJobWorkConditions.format_job_location(raw_data.location)
 
-    tenure_type = FormatJobWorkConditions.format_job_tenure_type(r.tenure_type)
-    remote_status = FormatJobWorkConditions.format_job_remote_status(r.remote_status)
-    description_start = format_job_description_start(r.description_start)
+    tenure_type = FormatJobWorkConditions.format_job_tenure_type(raw_data.tenure_type)
+    remote_status = FormatJobWorkConditions.format_job_remote_status(raw_data.remote_status)
+    description_start = format_job_description_start(raw_data.description_start)
 
-    full_page_link = format_job_url(r.full_page_link)
+    full_page_link = format_job_url(raw_data.full_page_link)
+
+    number_of_applicants = ""
+    full_description = ""
+
+    if raw_description_data:
+        number_of_applicants = FormatDescriptionJobData.format_job_number_of_applicants(
+            raw_description_data.number_of_applicants)
+        full_description = FormatDescriptionJobData.format_job_description_full(
+            raw_description_data.full_description)
+        if full_description == "": full_description = "N/A"
+
 
     return FormattedJobInformation(job_id=job_id, title=title, date=date, employer=employer,
     salary_lower=salary_lower, salary_upper=salary_upper, salary_type=salary_type,
     location=location, tenure_type=tenure_type, remote_status=remote_status,
-    description_start=description_start, full_page_link=full_page_link)
+    description_start=description_start, full_page_link=full_page_link,
+    number_of_applicants=number_of_applicants, full_description=full_description)
 
 
 class RawJobInformation(Protocol):
@@ -44,6 +73,13 @@ class RawJobInformation(Protocol):
     remote_status: str
     description_start: str
     full_page_link: str
+
+
+class RawJobDescriptionInformation(Protocol):
+    job_id: str
+    number_of_applicants: str
+    full_description: str
+
 
 @dataclass
 class FormattedJobInformation:
@@ -59,6 +95,8 @@ class FormattedJobInformation:
     remote_status: str
     description_start: str
     full_page_link: str
+    number_of_applicants: str
+    full_description: str
 
     def to_list(self) -> List[str]:
         return list(self.__dict__.values())
@@ -219,3 +257,33 @@ def format_job_id(raw_id: str) -> int:
         if char.isnumeric():
             output += char
     return int(output)
+
+
+class FormatDescriptionJobData:
+
+    VALID_SYMBOLS = [".", "-", ",", ":", ";", "£", "$", "€", "&", "%", "(", ")", "/"]
+
+    @staticmethod
+    def format_job_number_of_applicants(applicants_raw: str) -> str:
+        if applicants_raw == "Be one of the first ten applicants": return "<10"
+        if applicants_raw == "": return "10+"
+        return applicants_raw
+
+    @classmethod
+    def format_job_description_full(cls, description_raw: str):
+        output = ""
+        for char in description_raw:
+            if not cls._is_valid_char(char): continue
+            if char == " " and output[-1] == " ": continue
+            output += char
+            if char == ":": output += " "
+
+        return output
+    
+    @classmethod
+    def _is_valid_char(cls, char: str):
+        if char.isalnum(): return True
+        if char in cls.VALID_SYMBOLS: return True
+        if char == " ": return True
+        return False
+

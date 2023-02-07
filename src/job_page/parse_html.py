@@ -21,11 +21,11 @@ class DetailedJobContainerParser:
             description_raw = cls.get_job_full_description_raw(page_html)
 
             return RawExtraJobInformation(job_id=job_id,
-            number_of_applicants=applicants_raw, description=description_raw)
+            number_of_applicants=applicants_raw, full_description=description_raw)
             
         except AttributeError:
             return RawExtraJobInformation(job_id=job_id,
-             number_of_applicants="N/A", description="N/A")
+             number_of_applicants="N/A", full_description="N/A")
 
 
 
@@ -64,5 +64,5 @@ class DetailedJobContainerParser:
 @dataclass
 class RawExtraJobInformation:
     job_id: str
-    description: str
+    full_description: str
     number_of_applicants: str

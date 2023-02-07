@@ -5,7 +5,7 @@ class GetUserInput:
     LOCATION_PROMPT = "\nEnter the Location which you would like to search for jobs at:\n"
     SEARCH_RADIUS_PROMPT = "\nEnter the radius around the location you would like to search (miles):\n"
     MAX_RESULTS_PROMPT =  "\nEnter the maximum number of results you would like to retrive (rounds down to nearest 25):\n"
-    GET_DESCRIPTION_PROMPT = "\nWould you like to get more detailed description and applicant data? (maximum of first 50 results):\n[Y/y]    [N/n]"
+    GET_DESCRIPTION_PROMPT = "\nWould you like to get more detailed description and applicant data? (maximum of first 50 results):\n[Y/y]    [N/n]\n"
     SAVE_NAME_PROMPT = "\nEnter the name of the save file (do not include filetype e.g. .csv):\n"
 
     def __init__(self) -> None:

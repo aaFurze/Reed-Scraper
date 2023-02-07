@@ -45,10 +45,7 @@ COLUMNS = [
     "tenure_type",
     "remote_status",
     "description_start",
-    "full_page_link"
-]
-
-EXTRA_COLUMNS = [
+    "full_page_link",
     "number_of_applicants",
     "full_description"
 ]
@@ -56,15 +53,13 @@ EXTRA_COLUMNS = [
 
 
 class CreateJobDataFrame:
-
     @classmethod
     def create_df(cls, job_info_data: List[FormattedJobInformation]) -> pd.DataFrame:
         df = cls.create_blank_df()
         return cls.insert_mutliple_job_information_objects_into_df(df, job_info_data)
 
     @staticmethod
-    def create_blank_df(detailed_columns: bool = False):
-        if detailed_columns: return pd.DataFrame(columns=COLUMNS + EXTRA_COLUMNS)
+    def create_blank_df():
         return pd.DataFrame(columns=COLUMNS)
     
     @staticmethod
@@ -73,27 +68,11 @@ class CreateJobDataFrame:
         df.loc[len(df)] = job_info.to_list()
         return df  
 
-    @staticmethod
-    def insert_detailed_job_information_object_into_df(df: pd.DataFrame,
-     job_info: FormattedJobInformation, detailed_job_info: FormattedExtraJobInformation):
-        if job_info.job_id in df["job_id"].values: return df
-        df.loc[len(df)] = job_info.to_list() + detailed_job_info.to_list()[1:]
-        return df  
-
     @classmethod
     def insert_mutliple_job_information_objects_into_df(cls, df: pd.DataFrame,
         job_infos: List[FormattedJobInformation]) -> pd.DataFrame:
         for info in job_infos:
             df = cls.insert_job_information_object_into_df(df, info)
-        return df
-    
-    @classmethod
-    def insert_mutliple_detailed_job_information_objects_into_df(cls, df: pd.DataFrame,
-        job_infos: List[FormattedJobInformation],
-        detailed_job_infos: List[FormattedExtraJobInformation]) -> pd.DataFrame:
-        for i in range(len(job_infos)):
-            df = cls.insert_detailed_job_information_object_into_df(df, job_info=job_infos[i],
-            detailed_job_info=detailed_job_infos[i])
         return df
 
 

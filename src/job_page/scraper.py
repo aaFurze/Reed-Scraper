@@ -25,7 +25,7 @@ class ReedJobPageScraper:
             for job_id in job_ids:
 
                 cloudflare_limit_counter += 1
-                if cloudflare_limit_counter == 50: print("Page Limit reached. Cannot retrieve any more detailed job description and applicants information. Other job information will still be collected.")
+                if cloudflare_limit_counter == 51: print("Page Limit reached. Cannot retrieve any more detailed job description and applicants information. Other job information will still be collected.")
                 if cloudflare_limit_counter > 50: 
                     output.append("")
                     continue
