@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from src.df import COLUMNS, CreateJobDataFrame, FormatFileName, save_df_to_csv
-from src.search_page import FormattedJobInformation
+from src.formatting import FormattedJobInformation
 
 
 @pytest.fixture

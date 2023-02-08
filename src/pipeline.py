@@ -2,6 +2,8 @@ from typing import List
 
 import httpx
 
+from src.formatting import (FormattedJobInformation,
+                            multiple_raw_to_formatted_job_information)
 from src.job_page import *
 from src.search_page import *
 
@@ -16,7 +18,7 @@ class JobDataPipeline:
         
         self.formatted_results: List[FormattedJobInformation] = None
 
-        self.has_run = False
+        self._run_successful = False
 
 
     def run(self, job_title: str, location: str, search_radius: int = 10, max_pages: int = 1,
@@ -36,7 +38,7 @@ class JobDataPipeline:
             self.raw_results, self.description_raw_results
         )    
 
-        self.has_run = True
+        self._run_successful = True
 
     
     @staticmethod

@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-import src.search_page.formatting as formatting
+import src.formatting as formatting
 import src.search_page.parse_html as parse_html
 
 

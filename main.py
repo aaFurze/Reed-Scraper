@@ -3,7 +3,7 @@ from src.get_input import GetUserInput
 from src.pipeline import JobDataPipeline
 
 
-def run():
+def collect_data():
     user_input = GetUserInput.run_get_input()
 
     pipeline = JobDataPipeline()
@@ -17,5 +17,5 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    collect_data()
     
