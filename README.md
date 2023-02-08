@@ -119,6 +119,6 @@ README.md  data/  main.py  requirements.txt  src/  tests/
 
 NOTE: Sometimes, an empty csv file will be created. This signals that no job postings were found that matched your criteria. Consider re-running the program and relaxing the criteria you use to filter job applications.
 
-Thank you for using my Scraper!
+Thank you for using the Scraper!
 
 END
