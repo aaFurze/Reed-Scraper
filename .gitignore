@@ -129,7 +129,4 @@ dmypy.json
 .pyre/
 
 #csv files produced
-data/*
-!data/.gitkeep
-!data/example_data*
 *.csv
