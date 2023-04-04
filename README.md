@@ -41,7 +41,7 @@ This data is saved in a .csv format. This format should easily viewed in common 
 
 # Pre-requisites/Requirements to use the WebScraper
 
-- Python version 3.7+ (Program originally written using Python 3.9.0 interpreter)
+- Python version 3.8+ (Program originally written using Python 3.9.0 interpreter)
 - A standard Command line/prompt or Console (for setting up and running the program)
 
 ### Setting up the Virtual Environment
@@ -80,7 +80,7 @@ idna              3.4
 iniconfig         1.1.1
 lxml              4.9.2
 mypy-extensions   0.4.3
-numpy             1.24.1
+numpy             1.24.2
 packaging         22.0
 pandas            1.5.2
 pathspec          0.10.3
